@@ -1,0 +1,343 @@
+﻿@model THUE_CD.Models.Reservation
+@using THUE_CD.Models;
+
+@{
+    ViewBag.Title = "IndexReservations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+@*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">*@
+<!-- MAIN CONTENT-->
+<!-- Form xem chi tiết -->
+<div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Chi tiết đăt chổ</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-lg-b-195 table-responsive" method="POST" id="form">
+                    <!-- CD-->
+                    <div class="top-campaign">
+                        <div class="table-responsive">
+                            <table class="table table-top-campaign">
+                                <thead>
+                                    <tr>
+                                        <th>Tên tiêu đề</th>
+                                        <th>Ngày đặt</th>
+                                        <th>Tên khách hàng</th>
+                                        <th>Địa chỉ</th>
+                                        <th>Số điện thoại</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody id="SetReservationsList" data-toggle="modal">
+                                    <tr id="LoadingStatus"></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--  CD-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- FORM ADD TITLES-->
+<div class="modal fade" id="MyModalTitle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ModalTitle" style="color: blue">Đặt chổ</h4>
+            </div>
+            <div class="modal-body">
+                <form class="mt-5" method="POST" id="form">
+                    <fieldset id="SubmitForm">
+                        @Html.HiddenFor(m => m.Id_Reservation, new { @id = "Res_Id" })
+
+                        <div class="form-group" id="TypeDisk">
+                            <label>Tiêu đề:</label>
+                            <select id="SelectType" class="form-control"></select>
+                        </div>
+
+                        <hr />
+
+                        <div class="form-group">
+                            <label>ID Khách hàng:</label>
+                            @Html.TextBoxFor(m => m.Id_Customer, new { @id = "Res_Cus_Id_Customer", @class = "form-control" })
+                        </div>
+                        <hr />
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                            <button type="button" class="btn btn-primary" id="SaveTitleRecord">Xác Nhận</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORM XOA-->
+<div class="modal fade" id="DeleteConfirmation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Xóa Tiêu Đề</h4>
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+            </div>
+            <div class="modal-body">
+                <h4>Bạn muốn xóa tiêu đề này?</h4>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" data-dismiss="modal" id="r">Hủy</a>
+                <a href="#" class="btn btn-danger" onclick="ConfirmDelete()">Xác Nhận</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FORM LOAD DANH SACH TIEU DE-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Danh sách đặt đĩa</h2>
+                        <button class="au-btn au-btn-icon au-btn--blue" data-toggle="modal" onclick="AddNewReservation()" id="AddReservation">
+                            <i class="zmdi zmdi-plus"></i>Đặt
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40 table-data">
+                        <table class="table table-borderless table-striped table-earning table-data3" id="myDatatable">
+                            <thead>
+                                <tr>
+                                    <th>Mã đặt chổ</th>
+                                    <th>Mã tiêu đề</th>
+                                    <th>Mã khách hàng</th>
+                                    <th>Ngày đặt</th>
+                                    <th>Trạng thái</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="SetReservationList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--END MAIN CONTENT-->
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    var dev = document.getElementById("Reservations");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+    //Them so 0 truoc ngay thang < 10
+    function padLeft(number) {
+        return ((number < 10) ? "0" : "") + number;
+    }
+
+    //Format ngay thang nam
+    function parseJsonDate(jsonDateString) {
+        var date = new Date(parseInt(jsonDateString.replace('/Date(', '')));
+
+        return padLeft(date.getDate()) + "/" + padLeft(date.getMonth() + 1) + "/" + date.getFullYear();
+    }
+
+    $(document).ready(function (evt) {
+        $.ajax({
+            type: 'get',
+            url: "/Login/GetRoles",
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: true,
+            success:
+                function (kq) {
+                    if (kq == "Clerk") {
+                        $("#AddReservation").attr("hidden", "true")
+                    }
+                },
+            error: function () { alert(""); }
+        });
+
+
+        //Binding danh sách select TypeDisk
+        $.ajax({
+            type: 'Get',
+            url: '/Titles/GetTitlesList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success:
+                function TitleBind(lst) {
+                    var SetData = $("#SelectType");
+                    SetData.html("");
+                    $.each(lst, function (index, value) {
+                        var Data = "<option value='" + value.Id_Title + "'>" + value.TitleName + "</option>"
+                        SetData.append(Data);
+                    })
+                }
+        })
+        //Load danh sách item
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/Reservations/GetReservationList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            success:
+                function DataBind(ReservationList) {
+                    //This Code For Receive All Data From Controller And Show It In Client Side
+                    var SetData = $("#SetReservationList");
+                    $.each(ReservationList, function (index, value) {
+                        var Data = "<tr class='row_" + value.Id + "'>" +
+                            "<td onclick='DetailReservationsRecord(" + value.Id + ")'>" + value.Id + "</td>" +
+                            "<td onclick='DetailReservationsRecord(" + value.Id + ")'>" + value.Id_Title + "</td>" +
+                            "<td onclick='DetailReservationsRecord(" + value.Id + ")'>" + value.Id_Customer + "</td>" +
+                            "<td onclick='DetailReservationsRecord(" + value.Id + ")'>" + parseJsonDate(value.DateCreate) + "</td>" +
+                            "<td onclick='DetailReservationsRecord(" + value.Id + ")'>" + value.Status + "</td>" +
+                            "<td>" + "<a href='#' class='btn btn-danger' onclick='DeleteReservationsRecord(" + value.Id + ")'><span class='glyphicon glyphicon-trash'>Xóa</span></a>" + "</td>" + "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    })
+                },
+
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+
+        })
+
+    });
+
+
+    // Hàm lấy Cookie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+    //Show The Popup Modal For Add New Customer
+    function AddNewReservation() {
+            $("#form")[0].reset();
+            $("#ModalTitle").html("Thêm đặt chổ mới");
+            $("#MyModalTitle").modal();
+    }
+
+
+    //Save
+    $("#SaveTitleRecord").click(function () {
+        var Res_Id_Title = document.getElementById("SelectType").value;
+        var Res_Cus_Id_Customer = $("#Res_Cus_Id_Customer").val();
+
+        if (Res_Id_Title == "") {
+            alert("Mã tiêu đề không được để trống!!!");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/Reservations/SaveReservationsInDatabase?Res_Id_Title=" + Res_Id_Title + "&Res_Cus_Id_Customer=" + Res_Cus_Id_Customer,
+                success: function () {
+                    alert("Thêm Thành Công!");
+                    window.location.href = "/Reservations/IndexReservations";
+                    $("#MyModal").modal("hide");
+                },
+                error: function () {
+                    alert("khong thanh cong");
+                },
+            });
+        }
+    });
+
+
+    var ID_Delete;
+
+    var DeleteReservationsRecord = function (Id) {
+        var tk = getCookie("Cookies");
+        tk = tk.slice(7, tk.length);
+        if (tk != "") {
+            ID_Delete = Id;
+            $("#DeleteConfirmation").modal("show");
+        } else
+            alert("Bạn phải đăng nhập để thực hiện chức năng này!!!");
+    }
+
+    //Xoa dat cho
+    var ConfirmDelete = function () {
+        var Id = ID_Delete;
+        $.ajax({
+            type: "POST",
+            url: "/Reservations/DeleteReservationsRecord?Id=" + Id,
+            success: function (result) {
+                $("#DeleteConfirmation").modal("hide");
+                $(".row_" + Id).remove();
+            },
+            error: function () {
+
+                alert('Không thành công');
+            }
+        })
+    }
+
+    //Hien thi thong tin CD cua khach hang
+    function DetailReservationsRecord(Id) {
+        $("#ModalTitle").html("Chi tiết đặt chổ");
+        $("#MyModal").modal();
+
+        $.ajax({
+            type: "GET",
+            url: '/Reservations/GetSetReservationsListById?Id=' + Id,
+            success: function (data) {
+                var SetData = $("#SetReservationsList");
+                SetData.html("");
+                for (var i = 0; i < data.length; i++) {
+                    var Data =
+                        "<tr class='row_" + data[i].Name + "'>" +
+                        "<td>" + data[i].Name + "</td>" +
+                        "<td>" + parseJsonDate(data[i].DateCreate) + "</td>" +
+                        "<td>" + data[i].FullName + "</td>" +
+                        "<td>" + data[i].Address + "</td>" +
+                        "<td>" + data[i].Phone + "</td>" +
+                        "<td>" + data[i].Status + "</td>" +
+                        "</tr>";
+                    SetData.append(Data);
+                }
+            }
+        });
+        $(this).reven
+    }
+
+</script>
+

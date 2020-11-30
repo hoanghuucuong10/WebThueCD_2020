@@ -1,0 +1,301 @@
+﻿@model THUE_CD.Models.Customer
+@using THUE_CD.Models;
+@{
+    ViewBag.Title = "IndexCustomer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    //ThueDiaDB db = new ThueDiaDB();
+    //Accounts t = null;
+    //try
+    //{
+    //    HttpCookie ck = Request.Cookies["Cookies"];
+    //    if(ck !=null)
+    //    {
+    //        string s = ck["acname"];
+    //        if (s != null)
+    //        {
+    //            t = db.Accounts.Where(p => p.AccountName == s).FirstOrDefault();
+    //        }
+    //    }
+    //}
+    //catch(Exception e)
+    //{
+
+    //}
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+@*<script src="~/js/Test.js"></script>*@
+<!-- MAIN CONTENT-->
+<!-- FORM ADD, EDIT KHÁCH HÀNG-->
+<div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Thêm Khách Hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Xữ lý controller -->
+                <form class="mt-5" method="POST" style="margin-top: 1rem!important" id="form">
+                    <fieldset id="SubmitForm">
+                        <div class="form-group">
+                            <label id="lbid">Mã Khách Hàng</label>
+                            <input type="number" disabled id="Cus_Id" class = "form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Họ Và Tên</label>
+                            <input type="text"  id="Cus_Name" class = "form-control"/>
+                        </div>
+                        <div class="form-group">
+                            <label>Địa Chỉ</label>
+                            <input type="text" id="Cus_Address" class="form-control" />
+                        </div>
+                        <div class="form-group">
+                            <label>Số Điện Thoại</label>
+                            <input type="text" id="Cus_Phone" class="form-control" />
+
+                        </div>
+                        <div class="form-group">
+                            <label id="lbFine">Phí Trễ Đang Nợ</label>
+                            <input type="text" id="Cus_Fine" class="form-control" />
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                            <button type="button" class="btn btn-primary" id="SaveCustomerRecord">Confirm</button>
+                        </div>
+                    </fieldset>
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- FORM XOA-->
+<div class="modal fade" id="DeleteConfirmation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Xóa Khách Hàng</h4>
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+
+            </div>
+            <div class="modal-body">
+                <h4>Are You Sure? You Want To Delete This Customer?</h4>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" data-dismiss="modal" id="r">Thoát</a>
+                <a href="#" class="btn btn-danger" onclick="ConfirmDelete()">Xác Nhận</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORM LOAD DANH SACH KHACH HANG-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Danh Sách Khách Hàng</h2>
+                        <button class="au-btn au-btn-icon au-btn--blue" data-toggle="modal" onclick="AddNewCustomer()">
+                            <i class="zmdi zmdi-plus"></i>Thêm
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40 table-data">
+                        <table class="table table-borderless table-striped table-earning table-data3" id="myDatatable">
+                            <thead>
+                                <tr>
+                                    <th>Mã Khách Hàng</th>
+                                    <th>Họ Và Tên</th>
+                                    <th>Địa Chỉ</th>
+                                    <th>Số Điện Thoại</th>
+                                    <th>Phí Trễ Đang Nợ</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="SetCustomerList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--END MAIN CONTENT-->
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    var dev = document.getElementById("Customer");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+    //Show danh sach cac customer len
+    $(document).ready(function (evt) {
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: './GetCustomerList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            success:
+                function DataBind(CusList) {
+                    //This Code For Receive All Data From Controller And Show It In Client Side
+                    var SetData = $("#SetCustomerList");
+                    for (var i = 0; i < CusList.length; i++) {
+                        var Data = "<tr class='row_" + CusList[i].Id_Customer + "'>" +
+                            "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Id_Customer + "</td>" +
+                            "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].FullName + "</td>" +
+                            "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Address + "</td>" +
+                            "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Phone + "</td>" +
+                            "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Fine + "</td>" +
+                            "<td id='DelCustomer'>" + "<a href='#' class='btn btn-danger' onclick='DeleteCustomerRecord(" + CusList[i].Id_Customer + ")'><span class='glyphicon glyphicon-trash'>Delete</span></a>" + "</td>" +
+                            "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    }
+                    $.ajax({
+                        type: 'get',
+                        url: "/Login/GetRoles",
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        async: false,
+                        success:
+                            function (kq) {
+                                if (kq == "Clerk") {
+                                    $("#DelCustomer").attr("hidden", "true")
+                                }
+                            },
+                        error: function () { alert(""); }
+                    });
+                },
+
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+
+        })
+
+    });
+
+    //Show The Popup Modal For Add New Customer
+    function AddNewCustomer(Id_Customer) {
+        $("#form")[0].reset();
+        $("#Cus_Id").val(0);
+        $("#ModalTitle").html("Thêm Khách Hàng");
+        $("#MyModal").modal();
+        $("#Cus_Fine").val(0).prop("disabled", true);
+        $("#Cus_Id").val(0).prop("hidden", true); 
+        $("#lbid").prop("hidden", true);
+        $("#lbFine").prop("hidden", true);
+        $("#Cus_Fine").prop("hidden", true);
+
+    }
+
+    //Show The Popup Modal For Edit Customer Record
+    function EditCustomer(Id_Customer) {
+        $("#ModalTitle").html("Cập Nhật Thông Tin Khách Hàng");
+        $("#MyModal").modal();
+        $("#Cus_Fine").prop("disabled", true);
+        $("#Cus_Id").val(0).prop("disabled", true);
+        $("#Cus_Id").val(0).prop("hidden", false);
+        $("#lbid").prop("hidden", false);
+
+        $.ajax({
+            type: "GET",
+            url: '/Customer/GetCustomerById?Id_Customer=' + Id_Customer,
+            success: function (data) {
+                var obj = JSON.parse(data);
+                $("#Cus_Id").val(obj.Id_Customer);
+                $("#Cus_Name").val(obj.FullName);
+                $("#Cus_Address").val(obj.Address);
+                $("#Cus_Phone").val(obj.Phone);
+                $("#Cus_Fine").val(obj.Fine);
+            }
+        });
+    }
+
+    //Save
+    $("#SaveCustomerRecord").click(function () {
+        var id = document.getElementById("Cus_Id").value;
+        var name = document.getElementById("Cus_Name").value;
+        var address = document.getElementById("Cus_Address").value;
+        var phone = document.getElementById("Cus_Phone").value;
+        var data = $("#form").serialize();
+        $.ajax({
+            type: "POST",
+            url: "/Customer/SaveCustomerInDatabase?ID="+id+"&Name="+name+"&Address="+address+"&Phone="+phone,
+            data: data,
+            success: function () {
+                alert("Success!");
+                window.location.href = "/Customer/IndexCustomer";
+                $("#MyModal").modal("hide");
+            }
+        })
+    })
+    // Hàm lấy Cookie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+    //Thoong baso xoa customer
+    var DeleteCustomerRecord = function (Id_Customer) {
+            $("#Cus_Id").val(Id_Customer);
+            $("#DeleteConfirmation").modal("show");
+    }
+
+    //Xoa customer
+    var ConfirmDelete = function () {
+        var Cus_Id = $("#Cus_Id").val();
+        $.ajax({
+            type: "POST",
+            url: "/Customer/DeleteCustomerRecord?Id_Customer=" + Cus_Id,
+            success: function (result) {
+                $("#DeleteConfirmation").modal("hide");
+                $(".row_" + Cus_Id).remove();
+            },
+            error: function () {
+
+                alert('Không thành công');
+            }
+        })
+    }
+
+    //Kiểm tra thông tin
+    function myFunction() {
+        document.getElementById("Cus_Id").required = true;
+        document.getElementById("Cus_Address").required = true;
+        document.getElementById("Cus_Name").required = true;
+        document.getElementById("Cus_Phone").required = true;
+        document.getElementById("Cus_Fine").required = true;
+
+        document.getElementById("demo").innerHTML = "The required property was set. The email field must now be filled out before submitting the form.";
+    }
+</script>
+
+

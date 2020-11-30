@@ -1,0 +1,140 @@
+﻿@using THUE_CD.Models;
+@{
+    ThueDiaDB db = new ThueDiaDB();
+    Accounts t = null;
+    try
+    {
+        HttpCookie ck = Request.Cookies["Cookies"];
+        string s = ck["acname"];
+        if (s != null)
+        {
+            t = db.Accounts.Where(p => p.AccountName == s).FirstOrDefault();
+        }
+    }
+    catch
+    {
+
+    }
+
+}
+
+
+<div class="modal fade" id="MyModalPartial" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabe123213lsá" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Đăng Nhập</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="mt-5" method="POST" id="form">
+                    <label>Tên Tài Khoản:</label>
+                    <input type="text" id="acname" class="form-control" />
+
+                    <label>Mật Khẩu:</label>
+                    <input type="password" id="pw" class="form-control" />
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Thoát</button>
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnlogin" onclick="Login()">Đăng Nhập</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*@if (t != null)
+{
+    <div class="account-item clearfix js-item-menu">
+        <div class="image">
+            <img src="~/images/icon/avatar-01.jpg" alt="John Doe" />
+        </div>
+        <div class="content">
+            <a class="js-acc-btn" href="#">@t.AccountName</a>
+        </div>
+        <div class="account-dropdown js-dropdown">
+            <div class="info clearfix">
+                <div class="image">
+                    <a href="#">
+                        <img src="~/images/icon/avatar-01.jpg" alt="John Doe" />
+                    </a>
+                </div>
+                <div class="content">
+                    <h5 class="name">
+                        <a href="#">@t.AccountName</a>
+                    </h5>
+                </div>
+            </div>
+            <div class="account-dropdown__body">
+                <div class="account-dropdown__item">
+                    <a href="#">
+                        <i class="zmdi zmdi-account"></i>Account
+                    </a>
+                </div>
+                <div class="account-dropdown__item">
+                    <a href="#">
+                        <i class="zmdi zmdi-settings"></i>Setting
+                    </a>
+                </div>
+                <div class="account-dropdown__item">
+                    <a href="#">
+                        <i class="zmdi zmdi-money-box"></i>Billing
+                    </a>
+                </div>
+            </div>
+            <div class="account-dropdown__footer">
+                <a href="@Url.Action("LogOut","Account",new { t })">
+                    <i class="zmdi zmdi-power"></i>Logout
+                </a>
+            </div>
+        </div>
+    </div>
+
+}
+else
+
+{
+    <button class="au-btn au-btn-icon au-btn--blue" data-toggle="modal" onclick="OpenLoginFormPartial()" id="lol">
+        Đăng Nhập
+    </button>
+
+}*@
+
+<button class="au-btn au-btn-icon au-btn--blue" data-toggle="modal" onclick="OpenLoginFormPartial()" id="lol">
+    Đăng Nhập
+</button>
+
+<script>
+
+    function OpenLoginFormPartial() {
+        $("#MyModalPartial").modal('show');
+    }
+
+
+
+    function Login() {
+        //var acname = document.getElementById('acname').value;
+        //var pw = document.getElementById('pw').value;
+        //$.ajax({
+        //    type: 'post',
+        //    cache: false,
+        //    url: "/Account/Login?AcName=" + acname + '&Password=' + pw,
+        //    contentType: 'application/json; charset=utf-8',
+        //    dataType: 'json',
+        //    success:
+        //    function (kq) {
+        //        var obj = JSON.parse(kq);
+        //        if (obj == 'true') {
+        //            location.reload()
+        //        }
+        //        else
+        //            alert('Sai thông tin đăng nhập');
+
+        //    },
+        //});
+    }
+</script>

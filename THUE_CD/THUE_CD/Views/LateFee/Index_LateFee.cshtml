@@ -1,0 +1,304 @@
+﻿@model List<THUE_CD.ViewModel.ModelLateFeeCustomer>
+@{
+    ViewBag.Title = "IndexLateFee";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var idCus = "";
+    if (Model != null)
+    {
+        idCus= Model[0].Id_Customer.ToString();
+    }
+}
+
+
+<h2>IndexLateFee</h2>
+
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Danh sách đĩa có phí trễ</h2>
+                        <div class="col-lg-pull-4">
+
+                            <form class="form-header">
+                                <input class="au-input au-input--xl" id="IDCus" type="text" name="search" placeholder="Tìm kiếm ID Khách Hàng" />
+
+                                <button id="SearchBtn" type="submit" class="btn btn-primary">Tìm</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40 table-data">
+                        <table class="table table-borderless table-striped table-earning table-data3">
+                            <thead>
+                                <tr>
+                                    <th>ID đĩa</th>
+                                    <th>Tên tiêu đề</th>
+                                    <th>Khách Hàng</th>
+                                    <th>Phí Trễ</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="SetList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Chi Tiết</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-lg-b-195 table-responsive" method="POST" id="form">
+                    <!-- CD-->
+                    <div class="top-campaign">
+                        <div class="table-responsive">
+                            <table class="table table-top-campaign">
+                                <thead>
+                                    <tr>
+                                        <th>ID </th>
+                                        <th>Tên Tiêu Đề</th>
+                                        <th>Ngày Thuê</th>
+                                        <th>Hạn Trả</th>
+                                        <th>Ngày Trả</th>
+                                        <th>Ngày Trễ</th>
+                                        <th>Phí Trễ</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody id="SetLateFeeList" data-toggle="modal">
+                                    <tr id="LoadingStatus"></tr>
+                                    @if (Model != null)
+                                    {
+                                        for (int i = 0; i < Model.Count(); i++)
+                                        {
+                                            <tr class='row_@Model[i].Id_LateFee'>
+                                                <td>@Model[i].Title_Name</td>
+                                                <td>parseJsonDate(@Model[i].DateRent)</td>
+                                                <td>parseJsonDate(@Model[i].DateDue)</td>
+                                                <td>parseJsonDate(@Model[i].DateReturn)</td>
+                                                <td>@Model[i].DateLate</td>
+                                                <td>@Model[i].Fine</td>
+                                            </tr>
+                                        }
+
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--  CD-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                        <button type="button" class="btn btn-primary" id="thanhtoan">Thanh Toán</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!-- Form xac nhan thanh toan -->
+<div class="modal fade" id="staticModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticModalLabel">Static Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Xác nhận thanh toán!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="clear">Thoát</button>
+                <button type="button" class="btn btn-primary" onclick="thanhtoan()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    var dev = document.getElementById("LateFee");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+    function ShowAllLateFee() {
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: './GetLateFee',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            success:
+                function DataBind(LateFeeList) {
+                    var SetData = $("#SetList");
+                    SetData.html("");
+                    for (var i = 0; i < LateFeeList.length; i++) {
+                        var Data = "<tr class='row_" + LateFeeList[i].Id_LateFee + "'>" +
+                            "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Id_Item + "</td>" +
+                            "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Title_Name + "</td>" +
+                            "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Cus_Name + "</td>" +
+                            "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Fine + "</td>" +
+                            "<td>" + "<a href='#' class='btn btn-success' style='margin-right:10px' onclick='DelLateFee(" + LateFeeList[i].Id_LateFee + ")'><span>Xóa</span></a>" + "<a href='#' class='btn btn-success' onclick='ShowFormSubmit(" + LateFeeList[i].Id_LateFee + ")'><span>Thanh Toán</span></a>" + "</td>" +
+                            "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    }
+                },
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+        })
+    }
+    $(document).ready(function (evt) {
+        ShowAllLateFee();
+    });
+    function padLeft(number) {
+        return ((number < 10) ? "0" : "") + number;
+    }
+
+    //Format ngay thang nam
+    function parseJsonDate(jsonDateString) {
+        var date = new Date(parseInt(jsonDateString.replace('/Date(', '')));
+
+        return padLeft(date.getDate()) + "/" + padLeft(date.getMonth() + 1) + "/" + date.getFullYear();
+    }
+    function ShowLateFee(Id_LateFee) {
+        $("#ModalTitle").html("Danh Sách Phí Trễ");
+        $("#MyModal").modal();
+
+        $.ajax({
+            type: "GET",
+            url: '/LateFee/GetLateFeeById?Id_LateFee=' + Id_LateFee,
+            success: function (data) {
+                var SetData = $("#SetLateFeeList");
+                SetData.html("");
+                for (var i = 0; i < data.length; i++) {
+                    var Data =
+                        "<tr class='row_" + data[i].ID + "'>" +
+                        "<td>" + data[i].ID + "</td>" +
+                        "<td>" + data[i].Name_Title + "</td>" +
+                        "<td>" + parseJsonDate(data[i].DateRent) + "</td>" +
+                        "<td>" + parseJsonDate(data[i].DateDue) + "</td>" +
+                        "<td>" + parseJsonDate(data[i].DateReturn) + "</td>" +
+                        "<td>" + data[i].DateLate + "</td>" +
+                        "<td>" + data[i].Late_Fee + "</td>" +
+                        "</tr>";
+                    SetData.append(Data);
+                    $("#thanhtoan").click(function () {
+                        ShowFormSubmit(Id_LateFee);
+                    });
+                }
+
+            }
+        });
+    }
+    var idlatefee;
+    function ShowFormSubmit(Id_LateFee) {
+        $("#staticModalLabel").html("Thanh Toán");
+        idlatefee = Id_LateFee;
+        $("#staticModal").modal();
+
+    }
+    function thanhtoan() {
+        $.ajax({
+            type: "Post",
+            url: '/LateFee/SaveLateFee?Id_LateFee=' + idlatefee,
+            success: function (e) {
+                window.location.href = "/LateFee/IndexLateFee";
+                $("#staticModal").modal("hide");
+                $(".row_" + idlatefee).remove();
+            },
+            error: function (msg) {
+                alert('khong thanh cong');
+
+            }
+        });
+    }
+
+    function DelLateFee() {
+        $.ajax({
+            type: "Post",
+            url: '/LateFee/SaveLateFee?Id_LateFee=' + idlatefee,
+            success: function (e) {
+                window.location.href = "/LateFee/IndexLateFee";
+                $("#staticModal").modal("hide");
+                $(".row_" + idlatefee).remove();
+            },
+            error: function (msg) {
+                alert('khong thanh cong');
+
+            }
+        });
+    }
+    //Tim Khach hàng
+    $(document).ready(function () {
+        $("#IDCus").val(@idCus);
+
+       
+
+        $("#SearchBtn").click(function (event) {
+            event.preventDefault();
+
+            var SearchBy = $("#IDCus").val();
+            var SetData = $("#SetList");
+
+            if (SearchBy == "" || SearchBy == null) {
+                ShowAllLateFee();
+                return
+            }
+
+
+           
+            SetData.html("");
+            $.ajax({
+                type: "GET",
+                url: "./GetSearchingCus?Id_Cus=" + SearchBy,
+                contentType: "html",
+                success: function (LateFeeList) {
+                    if (LateFeeList.length == 0) {
+                        SetData.append('<tr style="color:red"><td colspan="3">No Match Data</td></tr>')
+                    }
+                    else {
+                        for (var i = 0; i < LateFeeList.length; i++) {
+                            var Data = "<tr class='row_" + LateFeeList[i].Id_LateFee + "'>" +
+                                "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Id_Item + "</td>" +
+                                "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Title_Name + "</td>" +
+                                "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Cus_Name + "</td>" +
+                                "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Fine + "</td>" +
+                                "<td>" + "<a href='#' class='btn btn-success' style='margin-right:10px' onclick='DelLateFee(" + LateFeeList[i].Id_LateFee + ")'><span>Xóa</span></a>" + "<a href='#' class='btn btn-success' onclick='ShowFormSubmit(" + LateFeeList[i].Id_LateFee + ")'><span>Thanh Toán</span></a>" + "</td>" +
+                                "</tr>";
+                            SetData.append(Data);
+                        }
+
+                    }
+                }
+            });
+        });
+    });
+</script>

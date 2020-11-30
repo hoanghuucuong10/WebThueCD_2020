@@ -1,0 +1,130 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Đăng nhập</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--===============================================================================================-->
+    <link rel="icon" type="image/png" href="images/icons/favicon.ico" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/bootstrap-4.1/bootstrap.min.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/material-design-iconic-font.min.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/animsition/animate.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/hamburgers.min.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/animsition/css/animsition.min.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/select2.min.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/vendor/daterangepicker/daterangepicker.css" rel="stylesheet" />
+    <!--===============================================================================================-->
+    <link href="~/css/util.css" rel="stylesheet" />
+    <link href="~/css/main.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <!--===============================================================================================-->
+</head>
+<body>
+    <div class="limiter">
+        <div class="container-login100">
+            <div class="wrap-login100">
+                <form class="login100-form validate-form">
+                    <span class="login100-form-title p-b-26">
+                        Quản lý cửa hàng cho thuê băng đĩa
+                    </span>
+                    <span class="login100-form-title p-b-48">
+                        <img src="~/images/icon/sound-system.png" style="width:100px; height:100px" />
+                    </span>
+
+                    <div class="wrap-input100 validate-input">
+                        <input class="input100" type="text" required id="username">
+                        <span class="focus-input100" data-placeholder="Tên đăng nhập"></span>
+                    </div>
+
+                    <div class="wrap-input100 validate-input" data-validate="Enter password">
+                        <input class="input100" type="password" id="pass" required>
+                        <span class="focus-input100" data-placeholder="Mật khẩu"></span>
+                    </div>
+
+                    <div class="container-login100-form-btn">
+                        <div class="wrap-login100-form-btn">
+                            <div class="login100-form-bgbtn"></div>
+                            <button class="login100-form-btn" id="btnLogin">
+                                Đăng nhập
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--Thông báo-->
+    <div class="modal" id="ModalThongBao" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span id="thongbao"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+    $('#btnLogin').click(function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: '/Login/Login',
+                data: { UserName: $('#username').val(), PassWord: $('#pass').val() },
+                success: function (data) {
+                    if (data == "True") {
+                        window.location = '/Home/Index';
+                    } else {
+                        ShowThongBao("Tên tài khoản hoặc mật khẩu không chính xác")
+                    }
+                },
+                dataType: 'JSON'
+            });
+        })
+
+     function ShowThongBao(thongbao) {
+        $('#thongbao').text(thongbao);
+        $('#ModalThongBao').modal('show');
+    }
+
+    </script>
+
+    <div id="dropDownSelect1"></div>
+    <!--===============================================================================================-->
+    <script src="~/vendor/jquery/jquery-3.2.1.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/animsition/js/animsition.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/popper.js"></script>
+    <script src="~/vendor/bootstrap-4.1/bootstrap.min.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/select2.min.js"></script>
+    <!--===============================================================================================-->
+
+    <script src="~/vendor/daterangepicker/moment.min.js"></script>
+    <script src="~/vendor/daterangepicker/daterangepicker.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/vendor/countdowntime/countdowntime.js"></script>
+    <!--===============================================================================================-->
+    <script src="~/js/main.js"></script>
+</body>
+</html>

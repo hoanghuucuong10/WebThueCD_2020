@@ -1,0 +1,201 @@
+﻿
+@{
+    ViewBag.Title = "IndexReportTitle";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+<!-- FORM LOAD DANH SACH TITLE-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Báo cáo tiêu đề</h2>
+                        @*<div class="col-lg-pull-4">
+
+                                <form class="form-header">
+                                    <select name="select" id="SearchBy">
+                                        <option value="0">Tất cả bản sao</option>
+                                        <option value="1">Bản sao đang cho thuê</option>
+                                        <option value="2">Bản sao đặt trước</option>
+                                        <option value="2">Bản sao trong kho</option>
+                                    </select>
+                                    <button id="SearchBtn" type="submit" class="btn btn-primary">Tìm</button>
+                                </form>
+                            </div>*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40 table-data">
+                        <table class="table table-borderless table-striped table-earning table-data3">
+                            <thead>
+                                <tr>
+                                    <th>Mã tiêu đề</th>
+                                    <th>Tên tiêu đề</th>
+                                    <th>Loại đĩa</th>
+                                    <th>Số lượng trong kho</th>
+                                    <th>Số lượng đặt trước</th>
+                                    <th>Số lượng cho thuê</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="SetTitleList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Form xem chi tiết các CD -->
+<div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Danh sách CD khách hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-lg-b-195 table-responsive" method="POST" id="form">
+                    <!-- CD-->
+                    <div class="top-campaign">
+                        <div class="table-responsive" style="text-align:center">
+                            <div>
+                                <b>Tổng số lượng: &ensp;<span id="ViewTongSoLuong"> 0 </span></b>
+                            </div>
+                                
+                            <table class="table table-top-campaign">
+                                <thead>
+
+                                </thead>
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên CD</th>
+                                        <th>Loai CD</th>
+                                        <th>Giá</th>
+                                        <th>Ngày mượn tối đa</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody id="SetReportCDList" data-toggle="modal">
+                                    <tr id="LoadingStatus"></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--  CD-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--END MAIN CONTENT-->
+
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    var dev = document.getElementById("Report");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+    //View danh sach cac customer
+    $(document).ready(function (evt) {
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: './GetTitleList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            success:
+                function DataBind(TitleList) {
+                    //This Code For Receive All Data From Controller And Show It In Client Side
+                    var SetData = $("#SetTitleList");
+                    for (var i = 0; i < TitleList.length; i++) {
+                        var Data = "<tr class='row_" + TitleList[i].Id_Title + "'>" +
+                            "<td>" + TitleList[i].Id_Title + "</td>" +
+                            "<td>" + TitleList[i].Name + "</td>" +
+                            "<td>" + TitleList[i].NameType + "</td>" +
+                            "<td>" + TitleList[i].CountOfItemOnShelf + "</td>" +
+                            "<td>" + TitleList[i].CountOfItemOnHold + "</td>" +
+                            "<td>" + TitleList[i].CountOfItemRented + "</td>" +
+                            "<td>" + "<a href='#' class='btn btn-success' onclick='ShowCDTitle(" + TitleList[i].Id_Title + ")'><span>Xem chi tiết</span></a>" + "</td>" +
+                            "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    }
+                },
+
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+        })
+    });
+
+    //Hien thi thong tin các item
+    function ShowCDTitle(Id_Title) {
+        $("#ModalTitle").html("Danh sách tiêu đề CD");
+        $("#MyModal").modal();
+
+        $.ajax({
+            type: "GET",
+            url: '/Report/GetCDTitleById?Id_Title=' + Id_Title,
+            success: function (data) {
+                var SetData = $("#SetReportCDList");
+                SetData.html("");
+                var stt = 1;
+                var TongSoluong = 0;
+                for (var i = 0; i < data.length; i++) {
+                    var Data =
+                        "<tr class='row_" + data[i].Name + "'>" +
+                        "<td>" + stt + "</td>" +
+                        "<td>" + data[i].Name + "</td>" +
+                        "<td>" + data[i].TypeDisk + "</td>" +
+                        "<td>" + data[i].RentPrice + "</td>" +
+                        "<td>" + data[i].MaxDate + "</td>" +
+                        "<td>" + data[i].Status + "</td>" +
+                        "</tr>";
+                    SetData.append(Data);
+                    stt++;
+                    TongSoluong++;
+                }
+                $("#ViewTongSoLuong").html(TongSoluong + "&ensp;bản sao");
+                var dev = document.getElementById("ViewTongSoLuong");
+                dev.style.color = "red";
+            }
+        });
+        $(this).reven
+    }
+
+</script>
+<style>
+    .table-top-campaign.table tr td:last-child {
+        color: #4272d7;
+        text-align: center;
+    }
+</style>

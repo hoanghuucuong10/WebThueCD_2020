@@ -1,0 +1,324 @@
+﻿@model THUE_CD.Models.Item
+@using THUE_CD.ViewModel;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<!-- MAIN CONTENT-->
+<!-- FORM Thêm Đĩa-->
+<div class="modal fade" id="MyModalAdd" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ModalTitle" style="color: blue">Thêm Đĩa</h4>
+            </div>
+            <div class="modal-body">
+                <form class="mt-5" style="margin-top: 1rem!important" method="POST" id="form">
+                    <fieldset id="SubmitFormAdd">
+                        <div class="form-group" id="TitleAdd">
+                            <label>Tựa Đĩa:</label>
+                            <select id="SelectTitleAdd" onchange="SelectChangeAdd()" class="form-control">                                
+                            </select>
+                        </div>
+                        <hr />
+                        <div class="form-group" id="TypeDiskAdd">
+                            <label>Loại Đĩa:</label>
+                            <input id="TypeAdd" class="form-control" disabled />
+                        </div>
+                        <hr />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                            <button type="button" class="btn btn-primary" id="AddItemRecord">Xác Nhận</button>
+                        </div>
+                     
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Form chi tiết đĩa-->
+<div class="modal fade" id="MyModalDetail" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="ModalTitleDetail" style="color: blue">Thông Tin Chi Tiết</h4>
+            </div>
+            <div class="modal-body">
+                <form class="mt-5" style="margin-top: 1rem!important" id="formDetail">
+                    <fieldset id="SubmitForm"> 
+                        <div>
+                            <label>Mã Đĩa</label>
+                            @Html.TextBoxFor(m => m.Id_Item, new { @id = "Item_Id", disabled = true, @class = "form-control" })
+                        </div>
+                        <hr />
+                        <div class="form-group" id="TitleDetail">
+                            <label>Tựa Đĩa</label>
+                            <input type="text" id="TitleDetailtxt" class="form-control" disabled />
+                        </div>
+                        <hr />
+                        <div class="form-group" id="TypeDiskDetail">
+                            <label>Loại Đĩa</label>
+                            <input type="text" id="TypeDetail" class="form-control" disabled />
+                        </div>
+                        <hr />
+                        <div class="form-group" id="StatusDetail">
+                            <label>Trạng thái</label>
+                            <input type="text" id="StatusDetailtxt" class="form-control" disabled />
+                        </div>
+                        <hr />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- FORM XOA-->
+<div class="modal fade" id="DeleteConfirmation">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Xóa Đĩa</h4>
+                <a href="#" class="close" data-dismiss="modal">&times;</a>
+            </div>
+            <div class="modal-body">
+                <h4>Bạn muốn xóa đĩa này?</h4>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="btn btn-primary" data-dismiss="modal" id="r">Thoát</a>
+                <a href="#" class="btn btn-danger" onclick="ConfirmDelete()">Xác Nhận</a>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- FORM LOAD DANH SACH KHACH HANG-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Danh sách đĩa</h2>
+                        <button class="au-btn au-btn-icon au-btn--blue" data-toggle="modal"  onclick="AddItem()" id="AddItem">
+                            <i class="zmdi zmdi-plus"></i>Thêm
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40">
+                        <table class="table table-borderless table-striped table-earning" id="myDatatable">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đĩa</th>
+                                    <th>Tựa Đĩa</th>
+                                    <th>Loại Đĩa</th>
+                                    <th>Trạng Thái</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody id="SetItemList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<!--END MAIN CONTENT-->
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    var dev = document.getElementById("Item");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+
+    $(document).ready(function (evt) {
+
+        //Binding danh sách select Title ở modal Thêm
+        $.ajax({
+            type: 'Get',
+            url: '/Titles/GetTitlesList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            success:
+                function TitleBind(lst) {
+                    var SetDataAdd = $("#SelectTitleAdd");
+                    SetDataAdd.html("<option value=''></option>");
+                    $.each(lst, function (index, value) {
+                        var Data = "<option value='" + value.Id_Title + "'>" + value.TitleName + "</option>"
+                        SetDataAdd.append(Data);
+                    })
+                }
+        })
+
+        //Load danh sách item 
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/Item/GetItemList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            async: false,
+            success:
+                function DataBind(ItemList) {
+                    var SetData = $("#SetItemList");
+                    $.each(ItemList, function (index, value) {
+                        var Data = "<tr class='row_" + value.Id_Item + "'>" +
+                            "<td onclick='DetailItemRecord(" + value.Id_Item + ")'>" + value.Id_Item + "</td>" +
+                            "<td onclick='DetailItemRecord(" + value.Id_Item + ")'>" + value.TitleName + "</td>" +
+                            "<td onclick='DetailItemRecord(" + value.Id_Item + ")'>" + value.TypeName + "</td>" +
+                            "<td onclick='DetailItemRecord(" + value.Id_Item + ")'>" + value.Status + "</td>" +
+                            "<td id='DelItem'>" + "<a href='#' class='btn btn-danger' onclick='DeleteItemRecord(" + value.Id_Item + ")'><span class='glyphicon glyphicon-trash'>Xóa</span></a>" + "</td>" + "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    })
+                },
+
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+        })
+        //$.ajax({
+        //    type: 'get',
+        //    url: "/Login/GetRoles",
+        //    contentType: 'application/json; charset=utf-8',
+        //    dataType: 'json',
+        //    async: true,
+        //    success:
+        //        function (kq) {
+        //            if (kq == "Clerk") {
+        //                $("#DelItem").attr("hidden", "true")
+        //                $("#AddItem").attr("hidden", "true")
+        //            }
+        //        },
+        //    error: function () { alert(""); }
+        //});
+    });
+
+    //thay đổi type khi đổi title trong thẻ select trong modal THêm
+    function SelectChangeAdd() {
+        var val = document.getElementById('SelectTitleAdd').value;
+        if (val == '')
+        {
+            $("#TypeAdd").val('');
+        }
+        else {
+            $.ajax({
+                type: 'Get',
+                url: '/TypeDisks/GetTypeByTitle?Id_Title=' + val,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success:
+                    function TitleBind(lst) {
+                        $("#TypeAdd").val(lst);
+                    }
+            })
+        }
+        
+    }
+
+    // Hàm lấy Cookie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+    //Mở modal thêm đĩa
+    function AddItem()
+    {
+         $("#MyModalAdd").modal();
+    }
+
+
+  
+    //Show The Popup Modal For Detail Customer Record
+    function DetailItemRecord(Id_Item) {
+        $("#MyModalDetail").modal();
+        //gán giá trị cho form
+        $.ajax({
+            type: "GET",
+            url: '/Item/GetItemById?Id_Item=' + Id_Item,
+            success: function (data) {
+                var obj = JSON.parse(data);
+                $("#Item_Id").val(obj.Id_Item);
+                $("#TitleDetailtxt").val(obj.TitleName);
+                $("#TypeDetail").val(obj.TypeName);
+                $("#StatusDetailtxt").val(obj.Status);
+
+            }          
+        });
+    }
+
+    //Nút xác nhận ở modal Thêm
+    $("#AddItemRecord").click(function () {
+
+        var Id_Title = document.getElementById("SelectTitleAdd").value;
+        if (Id_Title == '')
+        {
+            alert('Chưa thêm thông tin đĩa!!!');
+        }
+        else
+        {
+            $.ajax({
+                type: "POST",
+                url: "/Item/AddItemInDatabase?Id_Title=" + Id_Title,
+
+                success: function () {
+                    alert("Success!");
+                    window.location.href = "/Item/Index";
+                    $("#MyModalAdd").modal("hide");
+                }
+            })
+        }
+       
+    })
+
+
+    // xóa
+    function DeleteItemRecord(itemId) {
+        alert(itemId);
+    }
+    var idDel;
+    var DeleteItemRecord = function (Id_Item) {
+            idDel = Id_Item;
+            $("#DeleteConfirmation").modal("show"); 
+    }
+    var ConfirmDelete = function () {
+     
+        $.ajax({
+            type: "POST",
+            url: "/Item/DeleteItemRecord?Id_Item=" + idDel,
+            success: function (result) {
+                $("#DeleteConfirmation").modal("hide");
+                $(".row_" + idDel).remove();
+            },
+            error: function () {
+
+                alert('Không thành công');
+            }
+        })
+    }
+
+</script>

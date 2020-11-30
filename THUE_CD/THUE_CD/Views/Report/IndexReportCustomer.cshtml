@@ -1,0 +1,247 @@
+﻿@model IEnumerable<THUE_CD.Models.Customer>
+
+@{
+    ViewBag.Title = "IndexReportCustomer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+@*<script src="~/js/Test.js"></script>*@
+
+<!-- FORM LOAD DANH SACH KHACH HANG-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="title-1">Báo cáo khách hàng</h2>
+                        <div class="col-lg-pull-4">
+
+                            <form class="form-header">
+                                <select name="select" id="SearchBy">
+                                    <option value="0">Tất cả khách hàng</option>
+                                    <option value="1">Khách hàng quá hạn</option>
+                                    <option value="2">Khách hàng nợ</option>
+                                </select>
+                                <button id="SearchBtn" type="submit" class="btn btn-primary">Tìm</button>
+                            </form>
+                        </div>
+
+
+                        @*@Html.TextBox("Search")<input type="submit" id="SearchBtn" value="Search" /><br /><br />*@
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40 table-data">
+                        <table class="table table-borderless table-striped table-earning table-data3">
+                            <thead>
+                                <tr>
+                                    <th>Mã KH</th>
+                                    <th>Họ Và Tên</th>
+                                    <th>Địa Chỉ</th>
+                                    <th>SDT</th>
+                                    <th>Tiền Nợ</th>
+                                    <th>CD Thuê</th>
+                                    <th>Tổng Tiền Thuê</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="SetCustomerList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Form xem chi tiết các CD -->
+<div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Danh sách CD khách hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-lg-b-195 table-responsive" method="POST" id="form">
+                    <!-- CD-->
+                    <div class="top-campaign">
+                        <div class="table-responsive">
+                            <div>
+                                <b>Tổng tiền phạt: &ensp;<span id="ViewTongTienPhat"> 0 đ</span></b>
+                            </div>
+                            <table class="table table-top-campaign">
+                                <thead>
+
+
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Tên CD</th>
+                                        <th>Ngày Thuê</th>
+                                        <th>Hạn Trả</th>
+                                        @*<th>Ngày Trả</th>*@
+                                        <th>Tiền Thuê</th>
+                                        <th>Tiền Trả Muộn</th>
+                                        <th>Trạng Thái</th>
+                                    </tr>
+
+                                </thead>
+                                <tbody id="SetReportCustomerList" data-toggle="modal">
+                                    <tr id="LoadingStatus"></tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--  CD-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    var dev = document.getElementById("Report");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+    //Them so 0 truoc ngay thang < 10
+    function padLeft(number) {
+        return ((number < 10) ? "0" : "") + number;
+    }
+
+    //Format ngay thang nam
+    function parseJsonDate(jsonDateString) {
+        var date = new Date(parseInt(jsonDateString.replace('/Date(', '')));
+
+        return padLeft(date.getDate()) + "/" + padLeft(date.getMonth() + 1) + "/" + date.getFullYear();
+    }
+    //View danh sach cac customer
+    $(document).ready(function (evt) {
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/Report/GetAllCustomerList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            success:
+                function DataBind(CusList) {
+                    //This Code For Receive All Data From Controller And Show It In Client Side
+                    var SetData = $("#SetCustomerList");
+                    for (var i = 0; i < CusList.length; i++) {
+                        var Data = "<tr class='row_" + CusList[i].Id_Customer + "'>" +
+                            "<td>" + CusList[i].Id_Customer + "</td>" +
+                            "<td>" + CusList[i].FullName + "</td>" +
+                            "<td>" + CusList[i].Address + "</td>" +
+                            "<td>" + CusList[i].Phone + "</td>" +
+                            "<td>" + CusList[i].Fine + "</td>" +
+                            "<td>" + CusList[i].CountCDBorrow + "</td>" +
+                            "<td>" + CusList[i].TotalRent + "</td>" +
+                            "<td>" + "<a href='#' class='btn btn-success' onclick='ShowCDCustomer(" + CusList[i].Id_Customer + ")'><span>Xem chi tiết</span></a>" + "</td>" +
+                            "</tr>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    }
+                },
+
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+        })
+    });
+
+    //Hien thi thong tin CD cua khach hang
+    function ShowCDCustomer(Id_Customer) {
+        $("#ModalTitle").html("Danh sách CD khách hàng");
+        $("#MyModal").modal();
+
+        $.ajax({
+            type: "GET",
+            url: '/Report/GetCustomerById?Id_Customer=' + Id_Customer,
+            success: function (data) {
+                var SetData = $("#SetReportCustomerList");
+                SetData.html("");
+                var stt = 1;
+                var TongTienPhat = 0;
+                for (var i = 0; i < data.length; i++) {
+                    var Data =
+                        "<tr class='row_" + data[i].Name + "'>" +
+                        "<td>" + stt + "</td>" +
+                        "<td>" + data[i].Name + "</td>" +
+                        "<td>" + parseJsonDate(data[i].DateRent) + "</td>" +
+                        "<td>" + parseJsonDate(data[i].DateDue) + "</td>" +
+                        //"<td>" + parseJsonDate(data[i].DateReturn) + "</td>" +
+                        "<td>" + data[i].RentFee + "</td>" +
+                        "<td>" + data[i].Late_Fee + "</td>" +
+                        "<td>" + data[i].Status + "</td>" +
+                        "</tr>";
+                    SetData.append(Data);
+                    stt++;
+                    TongTienPhat += data[i].Late_Fee;
+                }
+                $("#ViewTongTienPhat").html(TongTienPhat + " vnđ");
+                var dev = document.getElementById("ViewTongTienPhat");
+                dev.style.color = "red";
+            }
+        });
+        $(this).reven
+    }
+
+
+    //Tim khach hang
+    $(document).ready(function () {
+        $("#SearchBtn").click(function (event) {
+            event.preventDefault();
+            var SearchBy = $("#SearchBy").val();
+            var SetData = $("#SetCustomerList");
+            SetData.html("");
+            $.ajax({
+                type: "GET",
+                url: "./GetSearchingData?SearchBy=" + SearchBy,
+                contentType: "html",
+                success: function (result) {
+                    if (result.length == 0 || result ==false) {
+                        SetData.append('<tr style="color:red"><td style="color:red; text-align:center" colspan="8">Danh sách rỗng</td></tr>')
+                    }
+                    else {
+                        $.each(result, function (index, value) {
+                            var Data =
+                                "<tr class='row_" + value.Id_Customer + "'>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.Id_Customer + "</td>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.FullName + "</td>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.Address + "</td>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.Phone + "</td>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.Fine + "</td>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.CountCDBorrow + "</td>" +
+                                "<td onclick='ShowCDCustomer(" + value.Id_Customer + ")'>" + value.TotalRent + "</td>" +
+                                "<td>" + "<a href='#' class='btn btn-success' onclick='ShowCDCustomer(" + value.Id_Customer + ")'><span>Xem chi tiết</span></a>" + "</td>" +
+                                "</tr>";
+                            SetData.append(Data);
+
+                        });
+                        //event.preventDefault();
+                    }
+                }
+            });
+        });
+    });
+</script>

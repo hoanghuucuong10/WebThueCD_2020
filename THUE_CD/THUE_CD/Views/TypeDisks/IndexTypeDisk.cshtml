@@ -1,0 +1,188 @@
+﻿
+@{
+    ViewBag.Type = "IndexTypeDisk";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<!--Form chi tiết tiêu đề-->
+<div class="modal fade" id="MyModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-Type" id="ModalType" style="color: blue">Chi Tiết</h4>
+            </div>
+            <div class="modal-body">
+                <form class="mt-5" style="margin-top: 1rem!important" id="formDetail">
+                    <fieldset id="SubmitForm">
+                        <div>
+                            <label>Mã Loại Đĩa:</label>
+                            <input type="text" class="form-control" id="Type_Id_Detail" disabled />
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label>Tên Loại Đĩa:</label>
+                            <input type="text" class="form-control" id="Type_Name_Detail" />
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label>Đơn Giá Thuê:</label>
+                            <input type="number" class="form-control" id="Price_Type_Detail" />
+                        </div>
+                        <hr />
+                        <div class="form-group">
+                            <label>Số Ngày Cho Thuê:</label>
+                            <input type="number" class="form-control" id="Num_Day_Detail" />
+                        </div>
+                        <hr />
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                            <button type="submit" class="btn btn-secondary" data-dismiss="modal" id="SaveTypeRecord">Xác Nhận</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FORM LOAD DANH SACH Loại Đĩa-->
+<div class="main-content">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="overview-wrap">
+                        <h2 class="Type-1">Danh Sách Loại Đĩa</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-12">
+                    <hr />
+                    <div class="table-responsive table--no-card m-b-40">
+                        <table class="table table-borderless table-striped table-earning" id="myDatatable">
+                            <thead>
+                                <tr>
+                                    <th>Mã Loại</th>
+                                    <th>Tên Loại</th>
+                                    <th>Đơn Giá Thuê (VND/ngày)</th>
+                                    <th>Số Ngày Cho Thuê</th>
+                                </tr>
+                            </thead>
+                            <tbody id="SetTypeList" data-toggle="modal">
+                                <tr id="LoadingStatus"></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+<!--END MAIN CONTENT-->
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script>
+    var dev = document.getElementById("TypeDisk");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+
+    $(document).ready(function (evt) {
+
+        //Load danh sách type
+        var input1 = "";
+        $.ajax({
+            type: 'GET',
+            cache: false,
+            url: '/TypeDisks/GetTypeList',
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            data: JSON.stringify({ input: input1 }),
+            success:
+                function DataBind(TypeList) {
+                    //This Code For Receive All Data From Controller And Show It In Client Side
+                    var SetData = $("#SetTypeList");
+                    $.each(TypeList, function (index, value) {
+                        var Data = "<tr class='row_" + value.Id_TypeDisk + "'>" +
+                            "<td onclick='DetailTypeRecord(" + value.Id_Type + ")'>" + value.Id_Type + "</td>" +
+                            "<td onclick='DetailTypeRecord(" + value.Id_Type + ")'>" + value.TypeName + "</td>" +
+                            "<td onclick='DetailTypeRecord(" + value.Id_Type + ")'>" + value.RentPrice + "</td>" +
+                            "<td onclick='DetailTypeRecord(" + value.Id_Type + ")'>" + value.MaxDate + "</td>";
+                        SetData.append(Data);
+                        $("#LoadingStatus").html(" ");
+                    })
+                },
+
+            error: function (msg) {
+
+                alert('Không thành công');
+            }
+
+        })
+
+    });
+
+
+    // Hàm lấy Cookie
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for (var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') c = c.substring(1);
+            if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+        }
+        return "";
+    }
+
+
+
+    //Show The Popup Modal For Detail Type Record
+    function DetailTypeRecord(Id_Type) {
+        var tk = getCookie("Cookies");
+        tk = tk.slice(7, tk.length);
+        if (tk != "") {
+            $("#MyModal").modal();
+            $.ajax({
+                type: "GET",
+                url: '/TypeDisks/GetTypeById?Id_Type=' + Id_Type,
+                success: function (obj) {
+                    $("#Type_Id_Detail").val(obj.Id_TypeDisk);
+                    $("#Type_Name_Detail").val(obj.NameType);
+                    $("#Price_Type_Detail").val(obj.RentPrice);
+                    $("#Num_Day_Detail").val(obj.MaxDate);
+                }
+            });
+        }
+        else {
+            alert("Bạn cần đăng nhập để thực hiện chức năng này!!!");
+        }
+    }
+    //Save
+    $("#SaveTypeRecord").click(function () {
+        var idT = document.getElementById("Type_Id_Detail").value;
+        var Price = document.getElementById("Price_Type_Detail").value;
+        var MaxDate = document.getElementById("Num_Day_Detail").value;
+        if (Price == "" && MaxDate == "") {
+            alert("không được để trống!!!");
+        }
+        else {
+            $.ajax({
+                type: "POST",
+                url: "/TypeDisks/UpdateTypeInDatabase?Id_Type=" + idT + "&RentPrice=" + Price + "&MaxDate=" + MaxDate,
+
+                success: function () {
+                    alert("Thêm Thành Công!");
+                    window.location.href = "/TypeDisks/IndexTypeDisk";
+                    $("#MyModal").modal("hide");
+                }
+            })
+        }
+
+    })
+
+
+</script>
+
+
+

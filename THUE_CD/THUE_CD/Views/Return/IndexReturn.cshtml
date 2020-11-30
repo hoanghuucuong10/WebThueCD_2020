@@ -1,0 +1,349 @@
+﻿@{
+    ViewBag.Title = "IndexReturn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+    .au-input--xl {
+        min-width: 280px;
+    }
+
+    .table-data .table tr td:last-child {
+        padding-right: 0px;
+    }
+
+    .table-data .table td {
+        padding-left: 20px;
+    }
+</style>
+
+<input id="isHavengaytre" type="hidden" />
+<div class="card-body" style="padding-top:80px">
+    <div class="tab-content pl-3 p-1" id="myTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="row" style="margin-top:20px">
+                <div class="col-lg-5">
+                    <div class="card">
+                        <div class="card-header" style="padding: 0.5rem 1.25rem;">
+
+                            <form class="form-header" action="" method="POST">
+                                <input class="au-input au-input--xl" id="SearchItem" type="text" name="search" placeholder="Tìm kiếm ID item" />
+                                <button class="au-btn--submit" type="submit" id="BtnButton">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                            <div id="thongbao1" style="margin-top:3px;color:red;"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title" style="margin-bottom: -0.25rem;">
+                                <h3 class="text-center title-2" style="font-size: 20px;"><strong>Thông tin đĩa trả</strong></h3>
+                            </div>
+                            <hr>
+                            <form action="" method="post" novalidate="novalidate">
+                                <div class="form-group">
+                                    <label for="cc-payment" class="control-label mb-1">ID:</label>
+                                    <input id="id" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group has-success">
+                                    <label for="cc-name" class="control-label mb-1">Tiêu đề:</label>
+                                    <input id="tieude" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Ngày thuê:</label>
+                                    <input id="ngaythue" type="hidden" style="float:right; width:65%" />
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Hạn trả:</label>
+                                    <input id="hantra" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Số ngày trễ:</label>
+                                    <input id="songaytre" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div>
+                                    <button id="cancel2" type="submit" class="btn btn-lg btn-info btn-block" style="width:40%;display:inline">
+                                        <span id="payment-button-amount">Hủy</span>
+                                    </button>
+                                    <button id="payment-button1" type="submit" class="btn btn-lg btn-info btn-block" style="width:58%; display:inline;margin-top:0px" disabled>
+                                        <span id="payment-button-amount">Thêm >></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="user-data m-b-30" style="padding-top:0px; margin-bottom:10px">
+                        <div class="card-header" style="font-size: 20px;">
+                            <h3 style="line-height:1.5"> <strong> Danh sách đĩa trả</strong></h3>
+                        </div>
+                        <div class="table-responsive table-data" style="height:auto">
+                            <table class="table" id="abc">
+                                <thead>
+                                    <tr>
+                                        <td>Id</td>
+                                        <td>Tiêu đề</td>
+                                        <td>Ngày trễ</td>
+                                        <td>Phí trễ</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="lst_rent"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><button class="btn btn-success" id="xacnhan" onclick="SaveDiskReturn()" disabled>Xác nhận</button></td>
+
+
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <h3>Menu 1</h3>
+            <p>Some content here.</p>
+        </div>
+    </div>
+</div>
+<!-- Form xac nhan thanh toan -->
+<div class="modal fade" id="staticModal" tabindex="-1" role="dialog" aria-labelledby="staticModalLabel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticModalLabel">Static Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Thanh toán các phí trễ?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="clear">Cancel</button>
+                <button type="button" class="btn btn-primary" id="thanhtoan" onclick="ThanhToan()">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    var dev = document.getElementById("Return");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+
+        var idItem_arr = [];
+        var datetime = "";
+        var datetime2 = "";
+        var ID_Item = "";
+        var k = 0;
+        var songay = 0;
+        $("#BtnButton").click(function (e) {
+            e.preventDefault();
+            var SearchValue = $("#SearchItem").val();
+            ID_Item = SearchValue;
+            for (var i = 0; i < idItem_arr.length; i++) {
+                if (SearchValue == idItem_arr[i]) {
+                    k++;
+                }
+            }
+            if (k == 0) {
+                $.ajax({
+                    type: 'Get',
+                    url: "/OrderDetails/GetOrDetail?Id=" + SearchValue,
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success:
+                    function (List) {
+                        var obj = JSON.parse(List);
+                        if (obj == null) {
+
+                            document.getElementById("id").value = "";
+                            document.getElementById("tieude").value = "";
+                            document.getElementById("ngaythue").value = "";
+                            document.getElementById("hantra").value = "";
+                            document.getElementById("songaytre").value = "";
+                            document.getElementById("thongbao1").innerHTML = "Không tìm thấy";
+                        }
+                        else {
+                            document.getElementById("SearchItem").disabled = true;
+                            document.getElementById("payment-button1").disabled = false;
+                            document.getElementById("thongbao1").innerHTML = "";
+                            document.getElementById("id").type = Text;
+                            document.getElementById("id").value = obj.ID;
+                            document.getElementById("id").disabled = true;
+
+                            document.getElementById("tieude").type = Text;
+                            document.getElementById("tieude").value = obj.Title_Name;
+                            document.getElementById("tieude").disabled = true;
+
+                            document.getElementById("ngaythue").type = Text;
+                            document.getElementById("ngaythue").value = obj.DateRent;
+                            document.getElementById("ngaythue").disabled = true;
+
+                            document.getElementById("hantra").type = Text;
+                            document.getElementById("hantra").value = obj.DateDue;
+                            document.getElementById("hantra").disabled = true;
+
+                            var temp = obj.DateDue;
+                            hantra = new Date(temp);
+                            // Do your operations
+                            var d = new Date();
+                            var t = d.getTime() - hantra.getTime();
+                            var seconds = Math.floor((t) / (1000));
+                            seconds = seconds / 60 / 60 / 24;
+                            var songay = parseInt(seconds);
+                            if (seconds != songay) {
+                                songay++;
+                            }
+                            if (songay <= 0) {
+                                songay = 0;
+                            } else {
+                                document.getElementById("isHavengaytre").value = songay;
+                            }
+                            document.getElementById("songaytre").type = Text;
+                            document.getElementById("songaytre").value = songay;
+                            document.getElementById("songaytre").disabled = true;
+
+                        }
+                    },
+                    error: function (msg) {
+                        alert("Không tìm thấy");
+                        document.getElementById("payment-button1").disabled = true;
+                    }
+                });
+
+            }
+            else {
+                document.getElementById("thongbao1").innerHTML = "ID đã được thêm";
+                k--;
+            }
+        });
+
+        $("#payment-button1").click(function (e) {
+            e.preventDefault();
+            var SearchItem = $("#SearchItem").val();
+            var soNgayTre = document.getElementById("songaytre").value;
+            var lst_rent = $('#lst_rent');
+                $.ajax({
+                    type: 'get',
+                    url: "/Item/GetItemById?Id_Item=" + SearchItem,
+                    success: function Add(obj) {
+                        var item = JSON.parse(obj);
+                        var data1 =
+                         "<tr class='row_" + SearchItem + "'>" +
+                            "<td>" + "<label>" + item.Id_Item + "</label>" + "</td>" +
+                            "<td>" +
+                                   "<span>" + item.TitleName + "</span>" +
+                            "</td>" +
+                            "<td>" +
+                            "<label>" + soNgayTre + "</label>" +
+                            "</td>" +
+                            "<td>" + item.LateFee * soNgayTre + "</td>" +
+
+                            "<td>" + " <div class='close-product'> <button class='btn btn-danger' onclick='deleteRecordRent(" + SearchItem+ ")' style='height:24px;padding-top:0px'>X</button></div>" + "</td>" +
+                       "</tr>";
+                        lst_rent.append(data1);
+                        document.getElementById("xacnhan").disabled = false;
+                        document.getElementById("payment-button1").disabled = true;
+
+                        document.getElementById("SearchItem").disabled = false;
+                        document.getElementById("SearchItem").value = "";
+                        document.getElementById("id").value = "";
+                        document.getElementById("tieude").value = "";
+                        document.getElementById("ngaythue").value = "";
+                        document.getElementById("hantra").value = "";
+                        document.getElementById("songaytre").value = "";
+                        document.getElementById("isHavengaytre").value = "";
+                        idItem_arr.push(SearchItem);
+                    }
+                });
+        });
+        function deleteRecordRent(ID) {
+            $(".row_" + ID).remove();
+            for (var i = 0; i < idItem_arr.length; i++) {
+                if (idItem_arr[i] == ID) {
+                    idItem_arr.splice(i, 1);
+                }
+            }
+            if(idItem_arr.length ==0)
+            {
+                document.getElementById("xacnhan").disabled = true;
+            }
+        }
+
+        function SaveDiskReturn() {
+            var lst = JSON.stringify(idItem_arr);
+            $.ajax({
+                type: 'Post',
+                cache: false,
+                url: '/Return/SaveDiskReturn?lst=' + lst,
+                dataType: 'json',
+                success:
+
+                     function ThanhToan(Cus) {
+                         var obj = JSON.parse(Cus);
+                         idItem_arr = [];
+                         var soNgayTre = document.getElementById("isHavengaytre").value;
+                         document.getElementById("thongbao1").innerHTML = "";
+                         document.getElementById("SearchItem").value = null;
+                         document.getElementById("id").value = "";
+                         document.getElementById("tieude").value = "";
+                         document.getElementById("ngaythue").value = "";
+                         document.getElementById("hantra").value = "";
+                         document.getElementById("songaytre").value = "";
+                         document.getElementById("xacnhan").disabled = true;
+                         var Parent = document.getElementById("lst_rent");
+                         while (Parent.hasChildNodes()) {
+                             Parent.removeChild(Parent.firstChild);
+                         }
+                         if (soNgayTre > 0)
+                         {
+                             $("#staticModalLabel").html("Thanh Toán");
+                             $("#staticModal").modal();
+                         }
+                         else
+                         {
+                             alert("Thành Công");
+                             document.getElementById("isHavengaytre").value = "";
+                         }
+
+
+                     },
+
+                error: function () {
+
+                    alert('Không thành công');
+                }
+
+            })
+        }
+        function ThanhToan()
+        {
+            window.location.href = "/LateFee/IndexLateFee";
+        }
+        $("#cancel2").click(function (e) {
+            e.preventDefault();
+            document.getElementById("thongbao1").innerHTML = "";
+            document.getElementById("SearchItem").disabled = false;
+            document.getElementById("SearchItem").value = "";
+            document.getElementById("id").value = "";
+            document.getElementById("tieude").value = "";
+            document.getElementById("ngaythue").value = "";
+            document.getElementById("hantra").value = "";
+            document.getElementById("songaytre").value = "";
+            document.getElementById("payment-button1").disabled = true;
+        });
+</script>

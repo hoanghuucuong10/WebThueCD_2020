@@ -1,0 +1,431 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="au theme template">
+    <meta name="author" content="Hau Nguyen">
+    <meta name="keywords" content="au theme template">
+
+    <!-- Title Page-->
+    <title>Dashboard</title>
+
+    <link href="https://cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css" rel="stylesheet" media="all">
+    @*<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">*@
+    <!-- Fontfaces CSS-->
+    <link href="~/css/font-face.css" rel="stylesheet" media="all">
+    <link href="~/vendor//font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="~/vendor//font-awesome-5/css/fontawesome-all.min.css" rel="stylesheet" media="all">
+    <link href="~/vendor//mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
+
+    <!-- Bootstrap CSS-->
+    <link href="~/vendor//bootstrap-4.1/bootstrap.min.css" rel="stylesheet" media="all">
+
+    <!-- Vendor CSS-->
+    <link href="~/vendor//animsition/animsition.min.css" rel="stylesheet" media="all">
+    <link href="~/vendor//bootstrap-progressbar/bootstrap-progressbar-3.3.4.min.css" rel="stylesheet" media="all">
+    <link href="~/vendor//wow/animate.css" rel="stylesheet" media="all">
+    <link href="~/vendor//css-hamburgers/hamburgers.min.css" rel="stylesheet" media="all">
+    <link href="~/vendor//slick/slick.css" rel="stylesheet" media="all">
+    <link href="~/vendor//select2/select2.min.css" rel="stylesheet" media="all">
+    <link href="~/vendor//perfect-scrollbar/perfect-scrollbar.css" rel="stylesheet" media="all">
+
+    <!-- Main CSS-->
+    <link href="~/css/theme.css" rel="stylesheet" media="all">
+    <style>
+        #iconthongbao {
+            display: inline-block;
+            height: 18px;
+            width: 18px;
+            line-height: 20px;
+            text-align: center;
+            background: #ff4b5a;
+            color: #fff;
+            border-radius: 50%;
+        }
+    </style>
+</head>
+
+<body class="animsition">
+
+    <!--Modal Đăng Nhập-->
+    <div class="modal fade" id="MyModalLogin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabe123213l" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalTitle">Đăng Nhập</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form class="mt-5" style="margin-top: 1rem!important" method="POST" id="form">
+                        <label>Tên Tài Khoản:</label>
+                        <input type="text" id="acname" class="form-control" />
+
+                        <label>Mật Khẩu:</label>
+                        <input type="password" id="pw" class="form-control" />
+
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" aria-label="Close">Thoát</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" id="btnlogin" onclick="Login()">Đăng Nhập</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!--Thông báo-->
+    <div class="modal" id="ModalThongBao" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Thông báo</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <span id="thongbao"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="page-wrapper">
+        <!-- END HEADER MOBILE-->
+        <!-- MENU SIDEBAR-->
+        <aside class="menu-sidebar d-none d-lg-block">
+            <div class="logo">
+                <a href="#">
+                    <img src="~/images/icon/logo.png" alt="Cool Admin" />
+                </a>
+            </div>
+            <div class="menu-sidebar__content js-scrollbar1">
+                <nav class="navbar-sidebar">
+                    <ul class="list-unstyled navbar__list">
+                        <li class="has-sub">
+                            <a id="Home" class="js-arrow" href="@Url.Action("Index","Home")">
+                                <i class="fas fa-shopping-basket"></i>Thuê Đĩa
+                            </a>
+                        </li>
+                        <li>
+                            <a id="Return" href="@Url.Action("IndexReturn","Return")">
+                                <i class="fas fa-upload"></i>Trả Đĩa
+                            </a>
+                        </li>
+                        <li>
+                            <a id="LateFee" href="@Url.Action("IndexLateFee","LateFee")">
+                                <i class="fa fa-usd"></i>Trả phí trễ
+                            </a>
+                        </li>
+
+                        <li>
+                            <a id="Reservations" href="@Url.Action("IndexReservations","Reservations")">
+                                <i class="fas fa-map-marker-alt"></i>Quản lý đặt đĩa
+                                <span class="quantity" id="iconthongbao" hidden>0</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a id="Customer" href="@Url.Action("IndexCustomer","Customer")">
+                                <i class="fas fa-address-card"></i>Quản lý khách hàng
+                            </a>
+                        </li>
+
+
+                        <li id="TieuDe">
+                            <a id="Titles" href="@Url.Action("Index","Titles")">
+                                <i class="fa fa-list-ul"></i>Quản lý tiêu đề
+                            </a>
+                        </li>
+
+
+                        <li>
+                            <a id="Item" href="@Url.Action("Index","Item")">
+                                <i class="fa fa-dot-circle-o"></i>Quản lý đĩa
+                            </a>
+                        </li>
+
+                        <li class="has-sub" id="BaoCaoKhachHang">
+                            <a id="Report" class="js-arrow" href="#">
+                                <i class="fas fa-file-alt"></i>Báo cáo
+                                <span class="arrow">
+                                    <i class="fas fa-angle-down"></i>
+                                </span>
+                            </a>
+                            <ul class="list-unstyled navbar__sub-list js-sub-list">
+                                <li>
+                                    <a id="ReportKH" href="#" onclick="ReportKH()">
+                                        <i class="fas fa-user"></i>Khách hàng
+                                    </a>
+                                </li>
+                                <li >
+                                    <a id="ReportTT" href="#" onclick="ReportTD()">
+                                        <i class="fa fa-list-ul"></i>Tiêu đề
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li id="LoaiDia">
+                            <a id="TypeDisk" href="@Url.Action("IndexTypeDisk","TypeDisks")">
+                                <i class="fas fa-tags"></i>Quản lý loại đĩa
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+        <!-- END MENU SIDEBAR-->
+        <!-- PAGE CONTAINER-->
+        <div class="page-container">
+            <!-- HEADER DESKTOP-->
+            <header class="header-desktop">
+                <div class="section__content section__content--p30">
+                    <div class="container-fluid">
+                        <div class="header-wrap">
+                            <div style="color:red;font-weight:bold; font-family:'Times New Roman', Times, serif;font-size:26px"> PHẦN MỀM QUẢN LÝ ĐĨA CHO THUÊ</div>
+                            <div class="header-button">
+                                <div class="noti-wrap">
+                                </div>
+                                <div class="account-wrap" id="formLogin">
+                                    <button class="au-btn au-btn-icon au-btn--blue" data-toggle="modal" hidden onclick="() => {  window.location = '@Url.Action("Login","Login")'; }" id="btnLoginLayout">
+                                        Đăng Nhập
+                                    </button>
+                                    <div class="account-item clearfix js-item-menu" id="clLoginLayout" hidden>
+                                        <div class="image">
+                                            <img src="~/images/icon/avatar-01.jpg" alt="John Doe" />
+                                        </div>
+                                        <div class="content">
+                                            <a class="js-acc-btn" href="#" id="tkname">AccountName</a>
+                                        </div>
+                                        <div class="account-dropdown js-dropdown">
+                                            <div class="info clearfix">
+                                                <div class="image">
+                                                    <a href="#">
+                                                        <img src="~/images/icon/avatar-01.jpg" alt="John Doe" />
+                                                    </a>
+                                                </div>
+                                                <div class="content">
+                                                    <h5 class="name">
+                                                        <a href="#" id="tknames"></a>
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <div class="account-dropdown__body">
+                                                <div class="account-dropdown__item">
+                                                    <a href="#">
+                                                        <i class="zmdi zmdi-account"></i>Account
+                                                    </a>
+                                                </div>
+                                                <div class="account-dropdown__item">
+                                                    <a href="#">
+                                                        <i class="zmdi zmdi-settings"></i>Setting
+                                                    </a>
+                                                </div>
+                                                <div class="account-dropdown__item">
+                                                    <a href="#">
+                                                        <i class="zmdi zmdi-money-box"></i>Billing
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="account-dropdown__footer">
+                                                <a href="#" onclick="Logout()">
+                                                    <i class="zmdi zmdi-power"></i>Logout
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- HEADER DESKTOP-->
+            <div style="background-color: #f5f5f5">
+                @RenderBody()
+            </div>
+
+            <!-- END PAGE CONTAINER-->
+
+            <div class="row" style="background-color: #f5f5f5">
+                <div class="col-md-12">
+                    <div class="copyright">
+                        <h3>Xây dựng phần mềm - Nhóm 8.</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function ShowThongBao(thongbao) {
+            $('#thongbao').text(thongbao);
+            $('#ModalThongBao').modal('show');
+        }
+
+        // Hàm lấy Cookie
+        function getCookie(cname) {
+            var name = cname + "=";
+            var ca = document.cookie.split(';');
+            for (var i = 0; i < ca.length; i++) {
+                var c = ca[i];
+                while (c.charAt(0) == ' ') c = c.substring(1);
+                if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
+            }
+            return "";
+        }
+
+        function CheckLoin() {
+            var tk = getCookie("Cookies");
+            tk = tk.slice(7, tk.length);
+            var Data = "";
+            if (tk == "") {
+
+                document.getElementById("btnLoginLayout").hidden = false;
+                document.getElementById("clLoginLayout").hidden = true;
+            }
+            else {
+                document.getElementById("tkname").innerHTML = tk;
+                document.getElementById("tknames").innerHTML = tk;
+                document.getElementById("btnLoginLayout").hidden = true;
+                document.getElementById("clLoginLayout").hidden = false;
+            }
+        }
+
+        $(document).ready(function () {
+            $.ajax({
+                type: 'get',
+                url: "/Login/GetRoles",
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                async: true,
+                success:
+                    function (kq) {
+                        if (kq == "Clerk") {
+                            $("#BaoCaoKhachHang").attr("hidden", "true")
+                            $("#LoaiDia").attr("hidden", "true")
+                           // $("#TieuDe").attr("hidden", "true")
+                        }
+                    },
+                error: function () { alert(""); }
+            });
+            CheckLoin();
+            Thongbao();
+
+
+
+        });
+        function Login() {
+            var acname = document.getElementById('acname').value;
+            var pw = document.getElementById('pw').value;
+            if (acname == '' || pw == '') {
+                ShowThongBao('Vui lòng điền thông tin đăng nhập!!!');
+            }
+            else {
+                $.ajax({
+                    type: 'post',
+                    url: "/Account/LogInModal?AcName=" + acname + '&Password=' + pw,
+                    contentType: 'application/json; charset=utf-8',
+                    dataType: 'json',
+                    success:
+                    function (kq) {
+                        var obj = JSON.parse(kq);
+                        if (obj == 1) {
+                            CheckLoin();
+                        }
+                        else
+                            ShowThongBao("Sai thông tin đăng nhập");
+
+                    },
+                    error: function () { alert(""); }
+                });
+            }
+
+        }
+        function Logout() {
+            $.ajax({
+                type: 'Post',
+                url: "/Login/LogOut",
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success:
+                function (kq) {
+                    window.location = '/LogIn/Login';
+                },
+                error: function () { alert(""); }
+            });
+        }
+        function Thongbao() {
+            $.ajax({
+                type: 'Get',
+                url: "/Reservations/Num",
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success:
+                function (kq) {
+                    if (kq == 0) {
+                        document.getElementById('iconthongbao').hidden = true;
+                    } else {
+                        document.getElementById('iconthongbao').innerHTML = kq;
+                        document.getElementById('iconthongbao').hidden = false;
+                    }
+
+
+                },
+                error: function () { alert(""); }
+            });
+        }
+
+        function ReportKH() {
+                window.location = '@Url.Action("IndexReportCustomer","Report")';
+        }
+
+        function ReportTD() {
+                window.location = '@Url.Action("IndexReportTitle","Report")';
+        }
+
+    </script>
+
+
+    <!-- Jquery JS-->
+    <script src="~/vendor//jquery-3.2.1.min.js"></script>
+    <!-- Bootstrap JS-->
+    <script src="~/vendor//bootstrap-4.1/popper.min.js"></script>
+    <script src="~/vendor//bootstrap-4.1/bootstrap.min.js"></script>
+    <!-- Vendor JS       -->
+    <script src="~/vendor//slick/slick.min.js">
+    </script>
+    <script src="~/vendor//wow/wow.min.js"></script>
+    <script src="~/vendor//animsition/animsition.min.js"></script>
+    <script src="~/vendor//bootstrap-progressbar/bootstrap-progressbar.min.js">
+    </script>
+    <script src="~/vendor//counter-up/jquery.waypoints.min.js"></script>
+    <script src="~/vendor//counter-up/jquery.counterup.min.js">
+    </script>
+    <script src="~/vendor//circle-progress/circle-progress.min.js"></script>
+    <script src="~/vendor//perfect-scrollbar/perfect-scrollbar.js"></script>
+    <script src="~/vendor//chartjs/Chart.bundle.min.js"></script>
+    <script src="~/vendor//select2/select2.min.js">
+    </script>
+    <script src="~/vendor//vector-map/jquery.vmap.js"></script>
+    <script src="~/vendor//vector-map/jquery.vmap.min.js"></script>
+    <script src="~/vendor//vector-map/jquery.vmap.sampledata.js"></script>
+    <script src="~/vendor//vector-map/jquery.vmap.world.js"></script>
+
+
+    <!-- Main JS-->
+    <script src="~/js/main.js"></script>
+
+
+</body>
+
+</html>
+<!-- end document-->

@@ -1,0 +1,565 @@
+﻿@model THUE_CD.Models.Item
+@using THUE_CD.ViewModel;
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Total = "0";
+}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<!-- MAIN CONTENT-->
+<div class="main-content" style="padding-top:80px; line-height:1">
+    <div class="section__content section__content--p30">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header" style="padding: 0.5rem 1.25rem;">
+                            <form class="form-header">
+                                <input class="au-input au-input--xl" type="text" name="search" id="Search" ; placeholder="Tìm kiếm ID khách hàng" />
+                                <button class="au-btn--submit" type="submit" id="searchbtn">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                            <div id="thongbao" style="margin-top:3px;color:red;"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title" style="margin-bottom: -0.25rem;">
+                                <h3 class="text-center title-2" style="font-size: 20px;"><strong>Thông tin khách hàng</strong></h3>
+                            </div>
+                            <hr>
+                            <form action="" method="post" novalidate="novalidate" id="Data">
+                                <div class="form-group">
+                                    <label for="cc-payment" class="control-label mb-1">Mã khách hàng:</label>
+                                    <input type="hidden" id="makh" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group has-success">
+                                    <label for="cc-name" class="control-label mb-1">Họ và tên:</label>
+                                    <input type="hidden" id="hoten" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Số điện thoại:</label>
+                                    <input type="hidden" id="sdt" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Địa chỉ:</label>
+                                    <input type="hidden" id="diachi" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Nợ phí:</label>
+                                    <input type="hidden" id="nophi" style="float:right; width:65%" />
+                                </div>
+                                <div>
+                                    <button id="cancel1" type="submit" class="btn btn-lg btn-info btn-block" style="width:40%;display:inline">
+                                        <span id="payment-button-amount">Hủy</span>
+                                    </button>
+                                    <button id="payment-button" type="submit" class="btn btn-lg btn-info btn-block" style="width:58%; display:inline;margin-top:0px" disabled>
+                                        <span id="payment-button-amount">Lập phiếu thuê >></span>
+                                    </button>
+
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="card">
+                        <div class="card-header" style="padding: 0.5rem 1.25rem;">
+
+                            <form class="form-header" action="" method="POST">
+                                <input class="au-input au-input--xl" type="text" name="search" id="SearchItem" ; placeholder="Tìm kiếm ID item" disabled />
+                                <button class="au-btn--submit" type="submit" id="BtnButton">
+                                    <i class="fa fa-search"></i>
+                                </button>
+                            </form>
+                            <div id="thongbao1" style="margin-top:3px;color:red;"></div>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title" style="margin-bottom: -0.25rem;">
+                                <h3 class="text-center title-2" style="font-size: 20px;"><strong>Thông tin đĩa thuê</strong></h3>
+                            </div>
+                            <hr>
+                            <form action="" method="post" novalidate="novalidate">
+                                <div class="form-group">
+                                    <label for="cc-payment" class="control-label mb-1">Tiêu đề:</label>
+                                    <input id="tieude" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group has-success">
+                                    <label for="cc-name" class="control-label mb-1">Loại:</label>
+                                    <input id="loai" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Trạng thái:</label>
+                                    <input id="status" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Hạn cho thuê:</label>
+                                    <input id="hanthue" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div class="form-group">
+                                    <label for="cc-number" class="control-label mb-1">Giá:</label>
+                                    <input id="gia" type="hidden" style="float:right; width:65%" />
+                                </div>
+                                <div>
+                                    <button id="cancel2" type="submit" class="btn btn-lg btn-info btn-block" style="width:40%;display:inline" disabled>
+                                        <span id="payment-button-amount">Hủy</span>
+                                    </button>
+                                    <button id="payment-button1" type="submit" class="btn btn-lg btn-info btn-block" style="width:58%; display:inline;margin-top:0px" disabled>
+                                        <span id="payment-button-amount">Thêm >></span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="user-data m-b-30" style="padding-top:0px; margin-bottom:10px">
+                        <div class="card-header" style="font-size: 20px;">
+                            <h3 style="line-height:1.5"> <strong> Danh sách cho thuê</strong></h3>
+                        </div>
+                        <div class="table-responsive table-data" style="height:auto">
+                            <table class="table" id="abc">
+                                <thead>
+                                    <tr>
+                                        <td>tiêu đề</td>
+                                        <td>loại</td>
+                                        <td>ngày cho thuê</td>
+                                        <td>hạn trả</td>
+                                        <td>giá</td>
+                                        <td></td>
+                                    </tr>
+                                </thead>
+                                <tbody id="lst_rent"></tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><label style="padding-left:0px;padding-top:14px;font-weight:bold">Tổng tiền:</label></td>
+                                        <td><label style="padding-top:14px;font-weight:bold" id="total">0 VND</label></td>
+                                        <td><button id="hoanthanh" class="btn btn-success" onclick="SaveOrder()" disabled>Hoàn Thành</button></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+                <!-- END USER DATA-->
+            </div>
+        </div>
+    </div>
+</div>
+<!--END MAIN CONTENT-->
+<!--Popup phí trễ của khách hàng-->
+<div class="modal fade" id="MyModalPhiTre" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ModalTitle">Thông Báo Phí Trễ Của Khách Hàng</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form class="m-lg-b-195 table-responsive" id="formPhiTre">
+                    <!-- CD-->
+                    <div class="top-campaign">
+                        <div class="table-responsive">
+                            <table class="table table-top-campaign">
+                                <thead>
+                                    <tr>
+                                        <th>Tiêu Đề </th>
+                                        <th>Ngày Thuê</th>
+                                        <th>Ngày Đáo Hạn</th>
+                                        <th>Ngày Trả</th>
+                                        <th>Số Ngày Trễ</th>
+                                        <th>Phí Trễ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="SetLateFeeList" data-toggle="modal">
+                                    <tr id="LoadingStatus"></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!--  CD-->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Thoát</button>
+                        <button type="button" class="btn btn-primary" id="thanhtoan">Thanh Toán</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+<!--Popup phí trễ của khách hàng-->
+<script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+<script>
+    var dev = document.getElementById("Home");
+    dev.style.color = "#4373D7";
+    dev.style.fontWeight = "bold";
+
+
+    var idItem_arr = [];
+    var datetime = "";
+    var datetime2 = "";
+    var CusID = "";
+    var k = 0;
+
+
+    $(document).ready(function () {
+
+        function padLeft(number) {
+            return ((number < 10) ? "0" : "") + number;
+        }
+        //Format ngay thang nam
+        function parseJsonDate(jsonDateString) {
+            var date = new Date(parseInt(jsonDateString.replace('/Date(', '')));
+
+            return padLeft(date.getDate()) + "/" + padLeft(date.getMonth() + 1) + "/" + date.getFullYear();
+        }
+        document.getElementById("BtnButton").disabled = true;
+        $("#thanhtoan").click(function (e) {
+            var idCus = $("#Search").val();
+            window.location.href = "/LateFee/IndexLateFeeCustomer?Id_Customer="+idCus;
+        })
+
+        //Search khách hàng
+        $("#searchbtn").click(function (e) {
+            debugger
+            e.preventDefault();
+            var SearchValue = $("#Search").val();
+            CusID = SearchValue;
+            $.ajax({
+                type: 'Get',
+                cache: false,
+                url: "/Home/GetCustomerById?Id_Customer=" + SearchValue,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success:
+                    function search(obj) {
+                        var SetData = $("#SetLateFeeList");
+                        SetData.html("");
+                        $.ajax({
+                            type: "GET",
+                            url: "/LateFee/GetSearchingCus?Id_Cus=" + SearchValue,
+                            async: false,
+                            contentType: "html",
+                            success: function (data) {
+                                if (data.length == 0) {
+                                    SetData.append('<tr style="color:red"><td colspan="3">No Match Data</td></tr>')
+                                }
+                                else {
+                                    for (var i = 0; i < data.length; i++) {
+                                        var Data =
+                                            "<tr class='row_" + data[i].Id_Item + "'>" +
+                                            "<td>" + data[i].Title_Name  + "</td>" +
+                                            "<td>" + parseJsonDate(data[i].DateRent) + "</td>" +
+                                            "<td>" + parseJsonDate(data[i].DateDue) + "</td>" +
+                                            "<td>" + parseJsonDate(data[i].DateReturn) + "</td>" +
+                                            "<td>" + data[i].DateLate + "</td>" +
+                                            "<td>" + data[i].Fine + "</td>" +
+                                            "</tr>";
+                                        SetData.append(Data);
+                                    }
+                                    $("#MyModalPhiTre").modal();
+                                }
+                              
+                            }
+                        });
+
+                        if (obj == null) {
+
+                            document.getElementById("makh").value = "";
+                            document.getElementById("hoten").value = "";
+                            document.getElementById("sdt").value = "";
+                            document.getElementById("diachi").value = "";
+                            document.getElementById("nophi").value = "";
+                            alert("Không tìm thấy");
+                            document.getElementById("payment-button").disabled = true;
+                        }
+                        else {
+                            document.getElementById("payment-button").disabled = false;
+                            document.getElementById("thongbao").innerHTML = "";
+                            document.getElementById("makh").type = Text;
+                            document.getElementById("makh").value = obj.Id_Customer;
+                            document.getElementById("makh").disabled = true;
+
+                            document.getElementById("hoten").type = Text;
+                            document.getElementById("hoten").value = obj.FullName;
+                            document.getElementById("hoten").disabled = true;
+
+                            document.getElementById("sdt").type = Text;
+                            document.getElementById("sdt").value = obj.Phone;
+                            document.getElementById("sdt").disabled = true;
+
+                            document.getElementById("diachi").type = Text;
+                            document.getElementById("diachi").value = obj.Address;
+                            document.getElementById("diachi").disabled = true;
+
+                            document.getElementById("nophi").type = Text;
+                            document.getElementById("nophi").value = obj.Fine;
+                            document.getElementById("nophi").disabled = true;
+
+                            document.getElementById("Search").disabled = true;
+                        }
+                    },
+                error: function (msg) {
+
+                    alert("Không tìm thấy");
+                    document.getElementById("payment-button").disabled = true;
+
+                }
+            });
+        });
+
+        //Search Item
+        $("#BtnButton").click(function (e) {
+            e.preventDefault();
+            var SearchValue = $("#SearchItem").val();
+            debugger
+            $.ajax({
+                type: 'post',
+                cache: false,
+                url: "/Home/GetItemByIdOnShelf?Id_Item=" + SearchValue,
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success:
+                    function (obj) {
+                        if (obj == null) {
+
+                            document.getElementById("tieude").value = "";
+                            document.getElementById("loai").value = "";
+                            document.getElementById("status").value = "";
+                            document.getElementById("hanthue").value = "";
+                            document.getElementById("gia").value = "";
+                            alert("Không tìm thấy");
+                        }
+                        else {
+                            document.getElementById("SearchItem").disabled = true;
+                            document.getElementById("tieude").type = Text;
+                            document.getElementById("tieude").value = obj.TitleName;
+                            document.getElementById("tieude").disabled = true;
+
+                            document.getElementById("loai").type = Text;
+                            document.getElementById("loai").value = obj.TypeName;
+                            document.getElementById("loai").disabled = true;
+
+                            document.getElementById("status").type = Text;
+                            document.getElementById("status").value = obj.Status;
+                            document.getElementById("status").disabled = true;
+
+                            document.getElementById("hanthue").type = Text;
+                            document.getElementById("hanthue").value = obj.MaxDate;
+                            document.getElementById("hanthue").disabled = true;
+
+                            document.getElementById("gia").type = Text;
+                            document.getElementById("gia").value = obj.RentFee;
+                            document.getElementById("gia").disabled = true;
+                            document.getElementById("payment-button1").disabled = false;
+                            document.getElementById("cancel2").disabled = false;
+
+                        }
+
+                    },
+                error: function (msg) {
+                    alert("Không tìm thấy");
+
+                }
+            });
+        });
+
+        //Nút lập phiếu thuê
+        $("#payment-button").click(function (e) {
+            e.preventDefault();
+            document.getElementById("SearchItem").removeAttribute("disabled");
+            document.getElementById("BtnButton").disabled = false;
+            document.getElementById("Search").disabled = true;
+
+        });
+        //Them so 0 truoc ngay thang < 10
+        function padLeft(number) {
+            return ((number < 10) ? "0" : "") + number;
+        }
+        // tang numday ngày kể từ ngày dateObj
+        function addDays(dateObj, numDays) {
+            dateObj.setDate(dateObj.getDate() + numDays);
+            return dateObj;
+        }
+        //thêm record vào list
+        $("#payment-button1").click(function (e) {
+            e.preventDefault();
+            var SearchItem = $("#SearchItem").val();
+            var lst_rent = $('#lst_rent');
+            var d = new Date();
+            datetime = padLeft(d.getDate()) + "/" + padLeft((d.getMonth() + 1)) + "/" + d.getFullYear();
+            for (var i = 0; i < idItem_arr.length; i++) {
+                if (SearchItem == idItem_arr[i]) {
+                    k++;
+                }
+            }
+            if (k == 0) {
+                $.ajax({
+                    type: 'get',
+                    url: "/Item/GetItemById?Id_Item=" + SearchItem,
+                    success: function Add(obj) {
+                        var item = JSON.parse(obj);
+                        var Ret = new Date();
+                        Ret = addDays(d, item.MaxDate);
+                        var month = (Ret.getMonth() + 1);
+
+                        datetime2 = padLeft(Ret.getDate()) + "/" + padLeft(month) + "/" + Ret.getFullYear();
+                        var data1 =
+                            "<tr class='row_" + SearchItem + "'>" +
+                            "<td hidden='hidden'><input class='id_item' value='" + item.Id_Item + "'/></td>" +
+                            "<td>" +
+                            "<span>" + item.TitleName + "</span>" +
+                            "</td>" +
+                            "<td>" +
+                            "<label>" + item.TypeName + "</label>" +
+                            "</td>" +
+                            "<td>" +
+                            "<label>" + datetime + "</label>" +
+                            "</td>" +
+                            "<td>" + datetime2 + "</td>" +
+                            "<td>" + item.RentFee + "</td>" +
+                            "<td>" + " " + "</td>" +
+                            "<td>" + " <div class='close-product'> <button class='btn btn-danger' onclick='deleteRecordRent(" + SearchItem + ",+" + item.RentFee + ")' style='height:20px;padding-top:0px'>X</button></div>" + "</td>" +
+                            "</tr>";
+                        lst_rent.append(data1);
+                        document.getElementById("payment-button1").disabled = true;
+                        document.getElementById("SearchItem").value = "";
+                        document.getElementById("SearchItem").disabled = false;
+                        document.getElementById("tieude").value = "";
+                        document.getElementById("loai").value = "";
+                        document.getElementById("status").value = "";
+                        document.getElementById("hanthue").value = "";
+                        document.getElementById("gia").value = "";
+
+                        document.getElementById("hoanthanh").disabled = false;
+                        Total(item.RentFee);
+                    }
+                });
+                idItem_arr.push(SearchItem);
+
+            } else {
+                alert("ID đã được thêm");
+                k--;
+            }
+        });
+    });
+    //nút xóa sản phẩm thuê
+    function deleteRecordRent(ID, price) {
+        $(".row_" + ID).remove();
+        for (var i = 0; i < idItem_arr.length; i++) {
+            if (idItem_arr[i] == ID) {
+                idItem_arr.splice(i, 1);
+            }
+        }
+        if (idItem_arr.length == 0) {
+            document.getElementById("hoanthanh").disabled = true;
+        }
+        price = 0 - price;
+        Total(price);
+
+    }
+    // nút hoàn thành
+    function SaveOrder() {
+        var lst = JSON.stringify(idItem_arr);
+        $.ajax({
+            type: 'Post',
+            cache: false,
+            url: '/OrderDetails/AddOrder?Lst=' + lst + '&date1=' + datetime + '&date2=' + datetime2 + '&CusID=' + CusID,
+            dataType: 'json',
+            success:
+                function Announce() {
+                    alert('Thành công');
+                    idItem_arr = [];
+                    document.getElementById("Search").value = "";
+                    document.getElementById("Search").disabled = false;
+                    document.getElementById("makh").value = "";
+                    document.getElementById("hoten").value = "";
+                    document.getElementById("sdt").value = "";
+                    document.getElementById("diachi").value = "";
+                    document.getElementById("nophi").value = "";
+
+                    document.getElementById("SearchItem").value = "";
+                    document.getElementById("SearchItem").disabled = true;
+                    document.getElementById("tieude").value = "";
+                    document.getElementById("loai").value = "";
+                    document.getElementById("status").value = "";
+                    document.getElementById("hanthue").value = "";
+                    document.getElementById("gia").value = "";
+                    var Parent = document.getElementById("lst_rent");
+                    while (Parent.hasChildNodes()) {
+                        Parent.removeChild(Parent.firstChild);
+                    }
+                    document.getElementById("hoanthanh").disabled = true;
+                    document.getElementById('total').innerHTML = 0 + '  VND';
+                    total = 0;
+                },
+
+            error: function () {
+
+                alert('Không thành công');
+            }
+
+        })
+    }
+    //Hủy lập phiếu thuê
+    $("#cancel1").click(function (e) {
+        e.preventDefault();
+        document.getElementById("Search").value = "";
+        document.getElementById("Search").disabled = false;
+        document.getElementById("makh").value = "";
+        document.getElementById("hoten").value = "";
+        document.getElementById("sdt").value = "";
+        document.getElementById("diachi").value = "";
+        document.getElementById("nophi").value = "";
+
+        document.getElementById("SearchItem").value = "";
+        document.getElementById("SearchItem").disabled = true;
+        document.getElementById("tieude").value = "";
+        document.getElementById("loai").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("hanthue").value = "";
+        document.getElementById("gia").value = "";
+
+        document.getElementById("BtnButton").disabled = true;
+        document.getElementById("payment-button").disabled = true;
+    });
+
+    //Hủy chọn item
+    $("#cancel2").click(function (e) {
+        e.preventDefault();
+        document.getElementById("SearchItem").disabled = false;
+        document.getElementById("payment-button1").disabled = true;
+        document.getElementById("SearchItem").value = "";
+        document.getElementById("tieude").value = "";
+        document.getElementById("loai").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("hanthue").value = "";
+        document.getElementById("gia").value = "";
+    });
+    //Tinh tong tien
+    var total = 0;
+    function Total(price) {
+        total += price;
+        document.getElementById('total').innerHTML = total.toString() + '  VND';
+    }
+
+
+</script>
+<style>
+    .table-data .table tr td:last-child {
+        padding-right: 0px;
+    }
+
+    .table-data .table td {
+        padding-left: 15px;
+    }
+</style>
