@@ -81,9 +81,32 @@ namespace THUE_CD.Controllers
             {
                 lt.Status = "Đã Trả";
                 lt.OrderDetails.Orders.Customers.Fine -= lt.Total;
+                if(lt.OrderDetails.Orders.Customers.Fine<0)
+                {
+                    lt.OrderDetails.Orders.Customers.Fine = 0;
+                }    
             }
             db.SaveChanges();
            
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [Authorize(Roles ="Manager")]
+        public JsonResult DeleteLateFee(int Id_LateFee)
+        {
+            LateFee lt = db.LateFees.Where(x => x.Id_LateFee == Id_LateFee && x.Status == "Chưa Trả").FirstOrDefault();
+            if (lt != null)
+            {
+                lt.Status = "Đã Xóa";
+                lt.OrderDetails.Orders.Customers.Fine -= lt.Total;
+                if (lt.OrderDetails.Orders.Customers.Fine < 0)
+                {
+                    lt.OrderDetails.Orders.Customers.Fine = 0;
+                }
+            }
+            db.SaveChanges();
+
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 

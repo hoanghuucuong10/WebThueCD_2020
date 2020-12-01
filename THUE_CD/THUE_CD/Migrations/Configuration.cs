@@ -133,7 +133,7 @@
             context.Orders.Add(new Order { Id_Customer = 5, TotalRent = 90000, DateRent = DateTime.Now });
             context.Orders.Add(new Order { Id_Customer = 6, TotalRent = 20000, DateRent = Convert.ToDateTime("2020-06-30") });
             context.Orders.Add(new Order { Id_Customer = 6, TotalRent = 20000, DateRent = Convert.ToDateTime("2020-06-30") });
-            context.Orders.Add(new Order { Id_Customer = 6, TotalRent = 20000, DateRent = Convert.ToDateTime("2020-06-30") });
+            context.Orders.Add(new Order { Id_Customer = 4, TotalRent = 20000, DateRent = Convert.ToDateTime("2020-06-30") });
             context.Orders.Add(new Order { Id_Customer = 7, TotalRent = 90000, DateRent = Convert.ToDateTime("2020-06-30") });
 
             context.SaveChanges();

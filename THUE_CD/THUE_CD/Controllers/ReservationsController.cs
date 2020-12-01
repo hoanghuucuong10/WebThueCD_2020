@@ -74,6 +74,7 @@ namespace THUE_CD.Controllers
                 FullName = x.Customers.FullName,
                 Address = x.Customers.Address,
                 Phone = x.Customers.Phone,
+                IdItem = db.ReserDetails.Where(s => s.Id_Reservation == x.Id_Reservation).Select(z => z.Id_Item).FirstOrDefault().ToString() ?? "",
                 Status = x.Status
             }).ToList();
 
@@ -88,12 +89,16 @@ namespace THUE_CD.Controllers
             Reservation Res = db.Reservations.SingleOrDefault(x => x.Id_Reservation == Id);
             //Xoa chi tiet cua dat cho
             ReserDetails ResD = db.ReserDetails.Where(x => x.Id_Reservation == Id).FirstOrDefault();  
-            if(Res.Status=="Đã Có Đĩa")
+                      
+            if(ResD!= null)
             {
-                Item item = db.Items.Where(x => x.Id_Item == ResD.Id_Item).FirstOrDefault();
-                item.Status = "On-Shelf";
-            }            
-            db.ReserDetails.Remove(ResD);
+                if (Res.Status == "Đã Có Đĩa")
+                {
+                    Item item = db.Items.Where(x => x.Id_Item == ResD.Id_Item).FirstOrDefault();
+                    item.Status = "On-Shelf";
+                }
+                db.ReserDetails.Remove(ResD);
+            }        
             //Xoa dat cho
             db.Reservations.Remove(Res);
             db.SaveChanges();

@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using THUE_CD.Models;
 using Newtonsoft.Json;
 using THUE_CD.ViewModel;
+using System.Data.Entity;
 
 namespace THUE_CD.Controllers
 {
@@ -70,7 +71,7 @@ namespace THUE_CD.Controllers
                    Fine = x.Fine,
                    FullName = x.FullName,
                    Phone = x.Phone
-           
+
                }
                 ).ToList();
             return Json(CusList, JsonRequestBehavior.AllowGet);
@@ -115,43 +116,60 @@ namespace THUE_CD.Controllers
         [HttpPost]
         public JsonResult DeleteCustomerRecord(int Id_Customer)
         {
-            bool result = false;
-            List<Order> Or = db.Orders.Where(x => x.Id_Customer == Id_Customer).ToList();
-            foreach (var item in Or)
+            using (DbContextTransaction transaction = db.Database.BeginTransaction())
             {
-                List<OrderDetail> OrD = db.OrderDetails.Where(x => x.Orders.Id_Customer == Id_Customer).ToList();
-                foreach (var i in OrD)
-                {                    
-                    if(i.Status == "Chưa Trả")
-                    {
-                        Item m = db.Items.Where(x => x.Id_Item == i.Id_Item).FirstOrDefault();
-                        m.Status = "On-Shelf";
-                    }
-                    db.OrderDetails.Remove(i);
-                }
-                db.Orders.Remove(item);
-            }
-            //thiếu
-            List<Reservation> Res = db.Reservations.Where(x => x.Id_Customer == Id_Customer).ToList();
-            foreach (var item in Res)
-            {
-                List<ReserDetails> Red = db.ReserDetails.Where(x => x.Id_Reservation == item.Id_Reservation).ToList();
-                foreach (var i in Red)
+                try
                 {
-                    db.ReserDetails.Remove(i);
+                    bool result = false;
+                    List<Order> Or = db.Orders.Where(x => x.Id_Customer == Id_Customer).ToList();
+                    foreach (var item in Or)
+                    {
+                        List<OrderDetail> OrD = db.OrderDetails.Where(x => x.Orders.Id_Customer == Id_Customer).ToList();
+                        foreach (var i in OrD)
+                        {
+                            if (i.Status == "Chưa Trả")
+                            {
+                                Item m = db.Items.Where(x => x.Id_Item == i.Id_Item).FirstOrDefault();
+                                m.Status = "On-Shelf";
+                            }
+
+                            var lateFee = db.LateFees.Where(x => x.Id_OrderDetail == i.Id_OrderDetail).FirstOrDefault();
+                            if (lateFee != null)
+                            {
+                                db.LateFees.Remove(lateFee);
+                            }
+                            db.OrderDetails.Remove(i);
+                        }
+                        db.Orders.Remove(item);
+                    }
+                 
+
+                    List<Reservation> Res = db.Reservations.Where(x => x.Id_Customer == Id_Customer).ToList();
+                    foreach (var item in Res)
+                    {
+                        List<ReserDetails> Red = db.ReserDetails.Where(x => x.Id_Reservation == item.Id_Reservation).ToList();
+                        foreach (var i in Red)
+                        {
+                            Item m = db.Items.Where(x => x.Id_Item == i.Id_Item).FirstOrDefault();
+                            m.Status = "On-Shelf";
+                            db.ReserDetails.Remove(i);
+                        }
+                        db.Reservations.Remove(item);
+                    }
+
+                    Customer Cus = db.Customers.SingleOrDefault(x => x.Id_Customer == Id_Customer);
+                    db.Customers.Remove(Cus);
+                    db.SaveChanges();
+
+                    transaction.Commit();
+                    return Json(true, JsonRequestBehavior.AllowGet);
                 }
-                db.Reservations.Remove(item);
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    return Json(false, JsonRequestBehavior.AllowGet);
+                }
             }
-
-           
-
-
-
-            Customer Cus = db.Customers.SingleOrDefault(x => x.Id_Customer == Id_Customer);
-            db.Customers.Remove(Cus);
-            db.SaveChanges();
-            result = true;
-            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
     }

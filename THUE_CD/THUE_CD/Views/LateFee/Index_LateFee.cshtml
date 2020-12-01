@@ -5,7 +5,7 @@
     var idCus = "";
     if (Model != null)
     {
-        idCus= Model[0].Id_Customer.ToString();
+        idCus = Model[0].Id_Customer.ToString();
     }
 }
 
@@ -20,7 +20,6 @@
                     <div class="overview-wrap">
                         <h2 class="title-1">Danh sách đĩa có phí trễ</h2>
                         <div class="col-lg-pull-4">
-
                             <form class="form-header">
                                 <input class="au-input au-input--xl" id="IDCus" type="text" name="search" placeholder="Tìm kiếm ID Khách Hàng" />
 
@@ -139,6 +138,30 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="staticModalDel" tabindex="-1" role="dialog" aria-labelledby="staticModalLabelDel" aria-hidden="true"
+     data-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticModalLabelDel">Static Modal</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Bạn chắc chắn muốn xóa khoản phí trễ này?
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" id="clear">Thoát</button>
+                <button type="button" class="btn btn-primary" onclick="DelLateFee()">Xác nhận</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
 <script>
     var dev = document.getElementById("LateFee");
@@ -163,11 +186,12 @@
                             "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Title_Name + "</td>" +
                             "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Cus_Name + "</td>" +
                             "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Fine + "</td>" +
-                            "<td>" + "<a href='#' class='btn btn-success' style='margin-right:10px' onclick='DelLateFee(" + LateFeeList[i].Id_LateFee + ")'><span>Xóa</span></a>" + "<a href='#' class='btn btn-success' onclick='ShowFormSubmit(" + LateFeeList[i].Id_LateFee + ")'><span>Thanh Toán</span></a>" + "</td>" +
+                            "<td>" + "<a href='#' class='btn btn-danger' id='DeleteLateFee' style='margin-right:10px' onclick='ShowFormSubmitDel(" + LateFeeList[i].Id_LateFee + ")'><span>Xóa</span></a>" + "<a href='#' class='btn btn-success' onclick='ShowFormSubmit(" + LateFeeList[i].Id_LateFee + ")'><span>Thanh Toán</span></a>" + "</td>" +
                             "</tr>";
                         SetData.append(Data);
                         $("#LoadingStatus").html(" ");
                     }
+                    GetRoles();
                 },
             error: function (msg) {
 
@@ -175,6 +199,24 @@
             }
         })
     }
+
+    function GetRoles() {
+        $.ajax({
+            type: 'get',
+            url: "/Login/GetRoles",
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json',
+            async: false,
+            success:
+                function (kq) {
+                    if (kq == "Clerk") {
+                        $('#SetList .btn.btn-danger').attr("hidden", "false")
+                    }
+                },
+            error: function () { alert(""); }
+        });
+    }
+
     $(document).ready(function (evt) {
         ShowAllLateFee();
     });
@@ -214,7 +256,6 @@
                         ShowFormSubmit(Id_LateFee);
                     });
                 }
-
             }
         });
     }
@@ -241,13 +282,19 @@
         });
     }
 
+    function ShowFormSubmitDel(Id_LateFee) {
+        $("#staticModalLabelDel").html("Xác nhận xóa phí trễ");
+        idlatefee = Id_LateFee;
+        $("#staticModalDel").modal();
+
+    }
     function DelLateFee() {
         $.ajax({
             type: "Post",
-            url: '/LateFee/SaveLateFee?Id_LateFee=' + idlatefee,
+            url: '/LateFee/DeleteLateFee?Id_LateFee=' + idlatefee,
             success: function (e) {
                 window.location.href = "/LateFee/IndexLateFee";
-                $("#staticModal").modal("hide");
+                $("#staticModalDel").modal("hide");
                 $(".row_" + idlatefee).remove();
             },
             error: function (msg) {
@@ -259,8 +306,6 @@
     //Tim Khach hàng
     $(document).ready(function () {
         $("#IDCus").val(@idCus);
-
-       
 
         $("#SearchBtn").click(function (event) {
             event.preventDefault();
@@ -274,7 +319,7 @@
             }
 
 
-           
+
             SetData.html("");
             $.ajax({
                 type: "GET",
@@ -291,11 +336,11 @@
                                 "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Title_Name + "</td>" +
                                 "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Cus_Name + "</td>" +
                                 "<td onclick='ShowLateFee(" + LateFeeList[i].Id_LateFee + ")'>" + LateFeeList[i].Fine + "</td>" +
-                                "<td>" + "<a href='#' class='btn btn-success' style='margin-right:10px' onclick='DelLateFee(" + LateFeeList[i].Id_LateFee + ")'><span>Xóa</span></a>" + "<a href='#' class='btn btn-success' onclick='ShowFormSubmit(" + LateFeeList[i].Id_LateFee + ")'><span>Thanh Toán</span></a>" + "</td>" +
+                                "<td>" + "<a href='#' class='btn btn-danger' id='DeleteLateFee' style='margin-right:10px' onclick='ShowFormSubmitDel(" + LateFeeList[i].Id_LateFee + ")'><span>Xóa</span></a>" + "<a href='#' class='btn btn-success' onclick='ShowFormSubmit(" + LateFeeList[i].Id_LateFee + ")'><span>Thanh Toán</span></a>" + "</td>" +
                                 "</tr>";
                             SetData.append(Data);
                         }
-
+                        GetRoles();
                     }
                 }
             });

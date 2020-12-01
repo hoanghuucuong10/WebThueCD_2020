@@ -13,7 +13,7 @@ namespace THUE_CD.Controllers
     {
         ThueDiaDB db = new ThueDiaDB();
         // GET: Report
-        [Authorize(Roles ="Manager")]
+        [Authorize(Roles = "Manager")]
         public ActionResult IndexReportCustomer()
         {
             return View();
@@ -90,16 +90,23 @@ namespace THUE_CD.Controllers
         public JsonResult GetCDTitleById(int Id_Title)
         {
 
-            var value = db.Items.Where(x => x.Titles.Id_Title == Id_Title).Select(x => new
+            var value = db.Items.Where(x => x.Titles.Id_Title == Id_Title).ToList();
+
+            foreach (var i in value)
+            {
+                i.Status = ItemController.GetItemStatus(i.Status);
+            }
+
+            var result = value.Select(x => new
             {
                 Name = x.Titles.Name,
                 TypeDisk = x.Titles.TypeDisk.NameType,
                 RentPrice = x.Titles.TypeDisk.RentPrice,
                 MaxDate = x.Titles.TypeDisk.MaxDate,
                 Status = x.Status.Trim()
-            }).ToList();
+            });
 
-            return Json(value, JsonRequestBehavior.AllowGet);
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -125,13 +132,13 @@ namespace THUE_CD.Controllers
                         Status = x.Status
                     }).ToList(), JsonRequestBehavior.AllowGet);
                 }
-                else 
-                    return null;       
+                else
+                    return null;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
 
-            }       
+            }
 
             return Json(kq, JsonRequestBehavior.AllowGet);
         }
@@ -153,8 +160,8 @@ namespace THUE_CD.Controllers
                      Fine = x.Fine,
                      FullName = x.FullName,
                      Phone = x.Phone,
-                         //CountCDBorrow = x.orderList.Sum(y=>y.orderDetailList.Where(z=>z.Status == "CHƯA TRẢ").Count())
-                         CountCDBorrow = x.orderList.Sum(y => y.orderDetailList.Count),
+                     //CountCDBorrow = x.orderList.Sum(y=>y.orderDetailList.Where(z=>z.Status == "CHƯA TRẢ").Count())
+                     CountCDBorrow = x.orderList.Sum(y => y.orderDetailList.Count),
                      TotalRent = x.orderList.Sum(y => y.TotalRent)
                  }
                 ).ToList();

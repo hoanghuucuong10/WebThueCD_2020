@@ -17,11 +17,12 @@ namespace THUE_CD.Controllers
         public ActionResult Index()
         {
             HttpCookie ck = Request.Cookies["Cookies"];
-            if(ck ==null)
+            if (ck == null)
             {
                 return RedirectToAction("Login", "Login");
             }
-            else {
+            else
+            {
                 string s = ck["acname"];
                 if (s == null)
                 {
@@ -70,7 +71,7 @@ namespace THUE_CD.Controllers
                     Id_TypeDisk = x.Titles.Id_TypeDisk,
                     TitleName = x.Titles.Name,
                     TypeName = x.Titles.TypeDisk.NameType,
-                    Status = x.Status,
+                    Status = ItemController.GetItemStatus(x.Status.Trim()),
                     RentFee = x.Titles.TypeDisk.RentPrice,
                     LateFee = x.Titles.TypeDisk.LateFee,
                     MaxDate = x.Titles.TypeDisk.MaxDate
@@ -92,7 +93,7 @@ namespace THUE_CD.Controllers
                     Id_TypeDisk = x.Titles.Id_TypeDisk,
                     TitleName = x.Titles.Name,
                     TypeName = x.Titles.TypeDisk.NameType,
-                    Status = x.Status,
+                    Status = ItemController.GetItemStatus(x.Status.Trim()),
                     RentFee = x.Titles.TypeDisk.RentPrice,
                     LateFee = x.Titles.TypeDisk.LateFee,
                     MaxDate = x.Titles.TypeDisk.MaxDate

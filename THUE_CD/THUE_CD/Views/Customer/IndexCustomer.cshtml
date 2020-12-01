@@ -64,8 +64,8 @@
                         </div>
 
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancle</button>
-                            <button type="button" class="btn btn-primary" id="SaveCustomerRecord">Confirm</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                            <button type="button" class="btn btn-primary" id="SaveCustomerRecord">Xác nhận</button>
                         </div>
                     </fieldset>
 
@@ -86,7 +86,7 @@
 
             </div>
             <div class="modal-body">
-                <h4>Are You Sure? You Want To Delete This Customer?</h4>
+                <h4>Bạn có chắc muốn xóa khách hàng này?</h4>
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-primary" data-dismiss="modal" id="r">Thoát</a>
@@ -167,7 +167,7 @@
                             "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Address + "</td>" +
                             "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Phone + "</td>" +
                             "<td onclick='EditCustomer(" + CusList[i].Id_Customer + ")'>" + CusList[i].Fine + "</td>" +
-                            "<td id='DelCustomer'>" + "<a href='#' class='btn btn-danger' onclick='DeleteCustomerRecord(" + CusList[i].Id_Customer + ")'><span class='glyphicon glyphicon-trash'>Delete</span></a>" + "</td>" +
+                            "<td id='DelCustomer'>" + "<a href='#' class='btn btn-danger' onclick='DeleteCustomerRecord(" + CusList[i].Id_Customer + ")'><span class='glyphicon glyphicon-trash'>Xóa</span></a>" + "</td>" +
                             "</tr>";
                         SetData.append(Data);
                         $("#LoadingStatus").html(" ");
@@ -278,6 +278,8 @@
             success: function (result) {
                 $("#DeleteConfirmation").modal("hide");
                 $(".row_" + Cus_Id).remove();
+
+                alert('Xóa thành công');
             },
             error: function () {
 
